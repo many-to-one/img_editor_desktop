@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="main-container">
+
+        <div class="nav-cont">
+            <input type="file" id="fileInput"><br>
+            <button>save</button>
+        </div>
+
+        <div class="window-cont">
+            <img id="original">
+        </div>
+
+    </div>
+
+    <script>
+
+        let base64Image = '';
+
+        document.getElementById('fileinput').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                base64Image = reader.result;
+                document.getElementById('original').src = base64Image;
+            }
+
+            reader.readAsDataURL(e.target.files[0]);
+        })
+
+    </script>
+
+</body>
+</html>
