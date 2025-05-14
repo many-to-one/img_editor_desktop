@@ -25,16 +25,13 @@
       <div class="desctop">
         <p id="load">Processing...</p>
 
-        <canvas id="imageCanvas" style="display:none;"></canvas>
+        <!-- <canvas id="imageCanvas" style="display:none;"></canvas> -->
+         <canvas id="imageCanvas" width="300" height="300"></canvas>
         <div id="gammaCont">
-            <div>
-              <p id="gammaVal">Brightness</p>
-              <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
-            </div>
-            <div>
-              <p id="shadowVal">Shadows</p>
-              <input type="range" id="shadowsSlider" min="0" max="300" step="10" value="100">
-            </div>
+            <p id="gammaVal">Brightness</p>
+            <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
+            <p id="shadowVal">Shadows</p>
+            <input type="range" id="shadowSlider" min="0" max="1" step="0.1">
         </div>
 
         <img id="original">
@@ -53,6 +50,19 @@
     const canvas       = document.getElementById("imageCanvas");
     const ctx          = canvas.getContext("2d");
     const gammaCont = document.getElementById("gammaCont");
+
+    document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById("imageCanvas");
+            const ctx = canvas.getContext("2d");
+
+            if (!ctx) {
+                console.error("Canvas context failed to load.");
+                return;
+            }
+
+            // ctx.fillStyle = "blue";
+            // ctx.fillRect(50, 50, 100, 100);
+        });
 
 
     // CHOOSE THE IMAGE
@@ -97,14 +107,13 @@
       }
     }
 
-
+    const gammaSlider = document.getElementById("gammaSlider");
 
     // MANIPULATE WITH THE BRIGHTNESS
     function gammaF() {   
-      const gammaSlider = document.getElementById("gammaSlider");
 
       if (gammaCont.style.display === 'none') {
-        gammaCont.style.display = 'flex';
+        gammaCont.style.display = 'block';
       } else {
         gammaCont.style.display = 'none';
       }
@@ -116,33 +125,122 @@
 
     function applyGammaCorrection(gamma) {
       if (!image.src) return;
-
       image.style.filter = `brightness(${gamma}%)`;
-
     }
 
 
-    const shadowSlider = document.getElementById('shadowSlider');
-    shadowSlider.addEventListener("input", () => {
-      applyShadow(parseFloat(shadowSlider.value));
-    });
+    const shadowSlider = document.getElementById("shadowSlider");
+    shadowSlider.addEventListener("input", async () => {
+        // const strength = parseFloat(shadowSlider.value);
+        // const base64img = await window.pywebview.api.adjust_shadows(base64Image, strength);
+        // image.src = "data:image/png;base64," + base64img;
 
-    function applyShadow(shadow) {
-      if (!imageElem.src) return;
+           if (!base64Image) return alert("Please select an image first.");
 
-      const img = new Image();
-      img.src = imageElem.src;
-      img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.filter = `drop-shadow(10px 10px 15px rgba(0, 0, 0, ${shadow}))`;
-          ctx.drawImage(img, 0, 0);
-      };
-    }
+            const result = await window.pywebview.api.adjust_shadows(base64Image, strength);
+            if (result.status === "success") {
+              image.src = result.output_path + '?' + new Date().getTime(); // cache busting
+            } else {
+              alert("Error: " + result.message);
+            }
+      });
+
+
+    // async function adjustShadows() {
+    //   if (!base64Image) return alert("Please select an image first.");
+
+    //   // const result = await window.pywebview.api.remove_bg(base64Image);
+    //   // if (result.status === "success") {
+    //   //   image.src = result.output_path + '?' + new Date().getTime(); // cache busting
+    //   // } else {
+    //   //   alert("Error: " + result.message);
+    //   // }
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // let originalImageData = null;
+
+    // const img = new Image();
+    // img.onload = function () {
+    //   canvas.width = img.naturalWidth;
+    //   canvas.height = img.naturalHeight;
+    //   ctx.drawImage(img, 0, 0);
+    //   originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    // };
+    // img.src = image.src;
+
+    // const shadowSlider = document.getElementById('shadowSlider');
+
+    // shadowSlider.addEventListener("input", () => {
+    //   applyShadow(parseFloat(shadowSlider.value));
+    // });
+
+    // function applyShadow(strength) {
+    //   if (!image.src) return;
+
+    //   // image.style.filter = `drop-shadow(10px 10px 15px rgba(0, 0, 0, ${strength}))`; //`brightness(${shadow}%)`;
+
+    //   const img = new Image();
+    //   img.src = image.src;
+    //   img.onload = () => {
+    //       canvas.width = img.width;
+    //       canvas.height = img.height;
+    //       ctx.filter = `drop-shadow(10px 10px 15px rgba(0, 0, 0, ${strength}))`;
+    //       ctx.drawImage(img, 0, 0);
+    //   };
+
+    //   // const imageData = new ImageData(
+    //   //   new Uint8ClampedArray(originalImageData.data),
+    //   //   originalImageData.width,
+    //   //   originalImageData.height
+    //   // );
+
+    //   // const data = imageData.data;
+
+    //   // for (let i = 0; i < data.length; i += 4) {
+    //   //   let r = data[i];
+    //   //   let g = data[i + 1];
+    //   //   let b = data[i + 2];
+
+    //   //   // Calculate brightness (luma approximation)
+    //   //   let brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    //   //   // If in shadows (brightness < 100), lighten it
+    //   //   if (brightness < 100) {
+    //   //     const factor = 1 + strength * (1 - brightness / 100); // stronger on darker pixels
+
+    //   //     r = Math.min(255, r * factor);
+    //   //     g = Math.min(255, g * factor);
+    //   //     b = Math.min(255, b * factor);
+    //   //   }
+
+    //   //   data[i]     = r;
+    //   //   data[i + 1] = g;
+    //   //   data[i + 2] = b;
+    //   //   // alpha (data[i + 3]) stays the same
+    //   // }
+
+    //   ctx.putImageData(img, 0, 0);
+    //   image.src = canvas.toDataURL();
+  
+
+    // }
 
 
     let isDragging = false;
     let offsetX, offsetY;
+
 
     gammaCont.addEventListener("mousedown", (e) => {
         if (e.target.tagName === "INPUT") return;
@@ -163,6 +261,8 @@
         isDragging = false;
         gammaCont.style.cursor = "grab";
     });
+
+
 
 
 
