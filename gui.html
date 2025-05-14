@@ -2,11 +2,8 @@
 <html>
 <head>
   <title>Image Processor</title>
-  <link rel="stylesheet" href="static/style.css">
-  <link rel="stylesheet" href="static/gamma.css">
-  <!-- <style>
-    img { max-width: 300px; margin: 10px; }
-  </style> -->
+  <link rel="stylesheet" href="static/style/style.css?v=2">
+  <link rel="stylesheet" href="static/style/gamma.css?v=2">
 </head>
 <body>
 
@@ -30,12 +27,18 @@
 
         <canvas id="imageCanvas" style="display:none;"></canvas>
         <div id="gammaCont">
-          <input type="range" id="gammaSlider" min="0.2" max="3" step="0.1" value="1">
-          <label for="gammaSlider">Gamma</label>
+            <div>
+              <p id="gammaVal">Brightness</p>
+              <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
+            </div>
+            <div>
+              <p id="shadowVal">Shadows</p>
+              <input type="range" id="shadowsSlider" min="0" max="300" step="10" value="100">
+            </div>
         </div>
 
         <img id="original">
-        <img id="imgElem">
+
       </div>
 
     </div>
@@ -43,11 +46,16 @@
   </div>
 
   <script>
+
     let base64Image = '';
     let image = document.getElementById('original')
-    let imgElem = document.getElementById('imgElem')
     let load = document.getElementById('load')
+    const canvas       = document.getElementById("imageCanvas");
+    const ctx          = canvas.getContext("2d");
+    const gammaCont = document.getElementById("gammaCont");
 
+
+    // CHOOSE THE IMAGE
     document.getElementById('fileInput').addEventListener('change', function (e) {
       const reader = new FileReader();
       reader.onload = function () {
@@ -57,6 +65,9 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
+
+
+    // UPLOAD THE IMAGE
     async function uploadImage() {
       if (!base64Image) return alert("Please select an image first.");
 
@@ -72,6 +83,9 @@
       }
     }
 
+
+
+    // REMOVE BACKGROUND
     async function removeBG() {
       if (!base64Image) return alert("Please select an image first.");
 
@@ -84,15 +98,13 @@
     }
 
 
-    const gammaCont = document.getElementById('gammaCont');
-    const gammaSlider = document.getElementById("gammaSlider");
-    // const imgElem   = document.getElementById('imgElem');
-    const canvas       = document.getElementById("imageCanvas");
-    const ctx          = canvas.getContext("2d");
 
-    function gammaF() {     
+    // MANIPULATE WITH THE BRIGHTNESS
+    function gammaF() {   
+      const gammaSlider = document.getElementById("gammaSlider");
+
       if (gammaCont.style.display === 'none') {
-        gammaCont.style.display = 'block';
+        gammaCont.style.display = 'flex';
       } else {
         gammaCont.style.display = 'none';
       }
@@ -104,37 +116,55 @@
 
     function applyGammaCorrection(gamma) {
       if (!image.src) return;
-      
-      // Draw original into canvas at its natural size
-      const w = image.naturalWidth;
-      const h = image.naturalHeight;
-      canvas.width  = w;
-      canvas.height = h;
-      ctx.drawImage(image, 0, 0, w, h);
 
-      // Now grab the pixel data
-      const imageData = ctx.getImageData(0, 0, w, h);
-      const data      = imageData.data;
-      
-      // Build LUT
-      const invGamma = 1 / gamma;
-      const LUT = new Uint8ClampedArray(256);
-      for (let i = 0; i < 256; i++) {
-        LUT[i] = Math.min(255, Math.pow(i / 255, invGamma) * 255);
-      }
-      
-      // Apply to each pixel
-      for (let i = 0; i < data.length; i += 4) {
-        data[i]     = LUT[data[i]];     // R
-        data[i + 1] = LUT[data[i + 1]]; // G
-        data[i + 2] = LUT[data[i + 2]]; // B
-        // alpha unchanged
-      }
-      
-      // Put back and update img
-      ctx.putImageData(imageData, 0, 0);
-      image.src = canvas.toDataURL();
+      image.style.filter = `brightness(${gamma}%)`;
+
     }
+
+
+    const shadowSlider = document.getElementById('shadowSlider');
+    shadowSlider.addEventListener("input", () => {
+      applyShadow(parseFloat(shadowSlider.value));
+    });
+
+    function applyShadow(shadow) {
+      if (!imageElem.src) return;
+
+      const img = new Image();
+      img.src = imageElem.src;
+      img.onload = () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.filter = `drop-shadow(10px 10px 15px rgba(0, 0, 0, ${shadow}))`;
+          ctx.drawImage(img, 0, 0);
+      };
+    }
+
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    gammaCont.addEventListener("mousedown", (e) => {
+        if (e.target.tagName === "INPUT") return;
+        isDragging = true;
+        offsetX = e.clientX - gammaCont.getBoundingClientRect().left;
+        offsetY = e.clientY - gammaCont.getBoundingClientRect().top;
+        gammaCont.style.cursor = "grabbing";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+
+        gammaCont.style.left = `${e.clientX - offsetX}px`;
+        gammaCont.style.top = `${e.clientY - offsetY}px`;
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        gammaCont.style.cursor = "grab";
+    });
+
+
 
 
   </script>
