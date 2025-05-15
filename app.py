@@ -46,9 +46,10 @@ class Api:
             return {"status": "error", "message": str(e)}
 
 
-    def adjust_shadows(self, image_data, strength):
+    def adjust_shadows_(self, image_data, strength):
 
         try:
+            print("adjust_shadows_***********************", strength)
             # Decode base64 image
             header, base64_data = image_data.split(',')
             img_bytes = BytesIO(base64.b64decode(base64_data))
@@ -74,7 +75,7 @@ class Api:
                     pixels[x, y] = (r, g, b)
             
             output_buffer = BytesIO()
-            result = img.save(output_buffer, format="PNG")
+            result = img.save(pixels, format="PNG")
 
             # Save result to static/removed.png
             output_path = os.path.join("static", "shadows.png")
@@ -86,42 +87,48 @@ class Api:
             return {"status": "error", "message": str(e)}
 
 
-    def adjust_shadows_(self, image_data, strength):
-    try:
-        # Parse base64 input (strip data header)
-        header, base64_data = image_data.split(',')
-        img_bytes = BytesIO(base64.b64decode(base64_data))
-        img = Image.open(img_bytes).convert("RGB")
+    def adjust_shadows(self, image_data, strength):
+        try:
+            print("adjust_shadows_***********************", strength)
+            # Parse base64 input (strip data header)
+            header, base64_data = image_data.split(',')
+            img_bytes = BytesIO(base64.b64decode(base64_data))
+            img = Image.open(img_bytes).convert("RGB")
 
-        strength = float(strength)
-        pixels = img.load()
-        width, height = img.size
+            strength = float(strength)
+            pixels = img.load()
+            width, height = img.size
 
-        for y in range(height):
-            for x in range(width):
-                r, g, b = pixels[x, y]
+            for y in range(height):
+                for x in range(width):
+                    r, g, b = pixels[x, y]
+                    brightness = 0.299 * r + 0.587 * g + 0.114 * b
 
-                # Luma (brightness) approximation
-                brightness = 0.299 * r + 0.587 * g + 0.114 * b
+                    if brightness < 100:
+                        factor = 1 + strength * (1 - brightness / 100)
+                        r = min(255, int(r * factor))
+                        g = min(255, int(g * factor))
+                        b = min(255, int(b * factor))
 
-                if brightness < 100:
-                    factor = 1 + strength * (1 - brightness / 100)
-                    r = min(255, int(r * factor))
-                    g = min(255, int(g * factor))
-                    b = min(255, int(b * factor))
+                    pixels[x, y] = (r, g, b)
 
-                pixels[x, y] = (r, g, b)
+            # Save to buffer
+            output_buffer = BytesIO()
+            img.save(output_buffer, format="PNG")
+            output_buffer.seek(0)
 
-        # Convert back to base64
-        output_buffer = BytesIO()
-        img.save(output_buffer, format="PNG")
-        encoded_img = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
+            encoded_img = base64.b64encode(output_buffer.getvalue()).decode("utf-8")
 
-        return f"data:image/png;base64,{encoded_img}"
+            # return f"data:image/png;base64,{encoded_img}"
+            return {
+                "status": "success",
+                "image": f"data:image/png;base64,{encoded_img}"
+            }
 
-    except Exception as e:
-        print("Error adjusting shadows:", e)
-        return {"error": str(e)}
+        except Exception as e:
+            print("Error adjusting shadows:", e)
+            return {"error": str(e)}
+
 
 
 if __name__ == '__main__':

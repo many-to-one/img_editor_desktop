@@ -25,16 +25,17 @@
       <div class="desctop">
         <p id="load">Processing...</p>
 
-        <!-- <canvas id="imageCanvas" style="display:none;"></canvas> -->
-         <canvas id="imageCanvas" width="300" height="300"></canvas>
+        <canvas id="imageCanvas" style="display:none;"></canvas>
+         <!-- <canvas id="imageCanvas" width="300" height="300"></canvas> -->
         <div id="gammaCont">
             <p id="gammaVal">Brightness</p>
             <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
             <p id="shadowVal">Shadows</p>
-            <input type="range" id="shadowSlider" min="0" max="1" step="0.1">
+            <input type="range" id="shadowSlider" min="-10" max="10" step="1" value="0">
         </div>
 
-        <img id="original">
+        <img id="original" style="display: none;">
+        <img id="res">
 
       </div>
 
@@ -46,23 +47,24 @@
 
     let base64Image = '';
     let image = document.getElementById('original')
+    let res = document.getElementById('res')
     let load = document.getElementById('load')
     const canvas       = document.getElementById("imageCanvas");
     const ctx          = canvas.getContext("2d");
     const gammaCont = document.getElementById("gammaCont");
 
-    document.addEventListener("DOMContentLoaded", () => {
-            const canvas = document.getElementById("imageCanvas");
-            const ctx = canvas.getContext("2d");
+    // document.addEventListener("DOMContentLoaded", () => {
+    //         const canvas = document.getElementById("imageCanvas");
+    //         const ctx = canvas.getContext("2d");
 
-            if (!ctx) {
-                console.error("Canvas context failed to load.");
-                return;
-            }
+    //         if (!ctx) {
+    //             console.error("Canvas context failed to load.");
+    //             return;
+    //         }
 
-            // ctx.fillStyle = "blue";
-            // ctx.fillRect(50, 50, 100, 100);
-        });
+    //         // ctx.fillStyle = "blue";
+    //         // ctx.fillRect(50, 50, 100, 100);
+    //     });
 
 
     // CHOOSE THE IMAGE
@@ -75,7 +77,7 @@
       reader.readAsDataURL(e.target.files[0]);
     });
 
-
+    // var originalImageData = null
 
     // UPLOAD THE IMAGE
     async function uploadImage() {
@@ -125,38 +127,57 @@
 
     function applyGammaCorrection(gamma) {
       if (!image.src) return;
-      image.style.filter = `brightness(${gamma}%)`;
+      res.style.filter = `brightness(${gamma}%)`;
     }
 
 
     const shadowSlider = document.getElementById("shadowSlider");
-    shadowSlider.addEventListener("input", async () => {
-        // const strength = parseFloat(shadowSlider.value);
-        // const base64img = await window.pywebview.api.adjust_shadows(base64Image, strength);
-        // image.src = "data:image/png;base64," + base64img;
+    let originalImage = null; //new Image();
 
-           if (!base64Image) return alert("Please select an image first.");
+    image.onload = () => {
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      ctx.drawImage(image, 0, 0);
+      originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      applyShadow(0); // Default
+    };
 
-            const result = await window.pywebview.api.adjust_shadows(base64Image, strength);
-            if (result.status === "success") {
-              image.src = result.output_path + '?' + new Date().getTime(); // cache busting
-            } else {
-              alert("Error: " + result.message);
-            }
-      });
+    shadowSlider.addEventListener("input", () => {
+      const strength = parseFloat(shadowSlider.value);
+      applyShadow(strength);
+    });
 
+  
+    function applyShadow(strength) {
+      if (!originalImage) return;
 
-    // async function adjustShadows() {
-    //   if (!base64Image) return alert("Please select an image first.");
+      const imageData = new ImageData(
+        new Uint8ClampedArray(originalImage.data),
+        originalImage.width,
+        originalImage.height
+      );
 
-    //   // const result = await window.pywebview.api.remove_bg(base64Image);
-    //   // if (result.status === "success") {
-    //   //   image.src = result.output_path + '?' + new Date().getTime(); // cache busting
-    //   // } else {
-    //   //   alert("Error: " + result.message);
-    //   // }
-    // }
+      const data = imageData.data;
 
+      for (let i = 0; i < data.length; i += 4) {
+        let r = data[i];
+        let g = data[i + 1];
+        let b = data[i + 2];
+
+        // Luma approximation (brightness)
+        let brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+        if (brightness < 100) {
+          const factor = 1 + strength * (1 - brightness / 100);
+          data[i]     = Math.min(255, r * factor);
+          data[i + 1] = Math.min(255, g * factor);
+          data[i + 2] = Math.min(255, b * factor);
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      res.src = canvas.toDataURL();
+    }
 
 
 
