@@ -14,6 +14,7 @@
         <button onclick="BW()">BW</button>
         <button onclick="removeBG()">Remove BG</button>
         <button onclick="gammaF()">Gamma</button>
+        <button onclick="drawCurve()">Curve</button>
     </div>
 
     <div class="window-cont">
@@ -31,51 +32,58 @@
         <canvas id="previewCanvas" style="display:none;" width="1000" height="1000"></canvas>
         <canvas id="fullCanvas" style="display:none;"></canvas>
 
+        <div id="workspace">
 
-        <div id="gammaCont">
-            <p id="gammaVal">Brightness</p>
-            <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
+          <img id="original" style="display: none;">
+          <img id="res">
 
-            <p id="exposureVal">Exposure</p>
-            <input type="range" id="exposureSlider" min="-10" max="10" step="1" value="0">
+          <div id="gammaCont">
 
-            <p id="shadowVal">Shadows</p>
-            <input type="range" id="shadowSlider" min="-10" max="10" step="1" value="0">
+              <canvas id="curveCanvas" width="300" height="300" style="display:block; border:1px solid #ffffff;"></canvas>
 
-            <p id="lightVal">Lights</p>
-            <input type="range" id="lightSlider" min="-10" max="10" step="1" value="0">
+              <p id="gammaVal">Brightness</p>
+              <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
 
-            <p>Red</p>
-            <input type="range" id="redSlider" min="-10" max="10" step="0.1" value="1">
+              <p id="exposureVal">Exposure</p>
+              <input type="range" id="exposureSlider" min="-10" max="10" step="1" value="0">
 
-            <p>Green</p>
-            <input type="range" id="greenSlider" min="-10" max="10" step="0.1" value="1">
+              <p id="shadowVal">Shadows</p>
+              <input type="range" id="shadowSlider" min="-10" max="10" step="1" value="0">
 
-            <p>Blue</p>
-            <input type="range" id="blueSlider" min="-10" max="10" step="0.1" value="1">
+              <p id="lightVal">Lights</p>
+              <input type="range" id="lightSlider" min="-10" max="10" step="1" value="0">
 
-            <p>Shadows Tint (Green ↔ Magenta)</p>
-            <input type="range" id="shadowsTint" min="-10" max="10" step="1" value="1"><br>
+              <p>Red</p>
+              <input type="range" id="redSlider" min="-10" max="10" step="0.1" value="1">
 
-            <p>Red Primary Hue</p>
-            <input type="range" id="redHue" min="-1" max="1" step="0.01" value="0"><br>
-            <p>Red Primary Saturation</p>
-            <input type="range" id="redSat" min="0" max="2" step="0.01" value="1"><br>
+              <p>Green</p>
+              <input type="range" id="greenSlider" min="-10" max="10" step="0.1" value="1">
 
-            <p>Green Primary Hue</p>
-            <input type="range" id="greenHue" min="-1" max="1" step="0.01" value="0"><br>
-            <p>Green Primary Saturation</p>
-            <input type="range" id="greenSat" min="0" max="2" step="0.01" value="1"><br>
+              <p>Blue</p>
+              <input type="range" id="blueSlider" min="-10" max="10" step="0.1" value="1">
 
-            <p>Blue Primary Hue</p>
-            <input type="range" id="blueHue" min="-1" max="1" step="0.01" value="0"><br>
-            <p>Blue Primary Saturation</p>
-            <input type="range" id="blueSat" min="0" max="2" step="0.01" value="1"><br>
+              <p>Shadows Tint (Green ↔ Magenta)</p>
+              <input type="range" id="shadowsTint" min="-10" max="10" step="1" value="0"><br>
+
+              <p>Red Primary Hue</p>
+              <input type="range" id="redHue" min="-1" max="1" step="0.01" value="0"><br>
+              <p>Red Primary Saturation</p>
+              <input type="range" id="redSat" min="0" max="2" step="0.01" value="1"><br>
+
+              <p>Green Primary Hue</p>
+              <input type="range" id="greenHue" min="-1" max="1" step="0.01" value="0"><br>
+              <p>Green Primary Saturation</p>
+              <input type="range" id="greenSat" min="0" max="2" step="0.01" value="1"><br>
+
+              <p>Blue Primary Hue</p>
+              <input type="range" id="blueHue" min="-1" max="1" step="0.01" value="0"><br>
+              <p>Blue Primary Saturation</p>
+              <input type="range" id="blueSat" min="0" max="2" step="0.01" value="1"><br>
+
+          </div>
 
         </div>
 
-        <img id="original" style="display: none;">
-        <img id="res">
 
       </div>
 
@@ -114,6 +122,7 @@
     window.addEventListener('pywebviewready', () => {
       const image = document.getElementById('original');
       const fileInput = document.getElementById('fileInput');
+      drawCurve()
 
       fileInput.addEventListener('change', async () => {
         dialogWindow.style.display = 'block';
@@ -186,14 +195,14 @@
     const gammaSlider = document.getElementById("gammaSlider");
 
     // MANIPULATE WITH THE BRIGHTNESS
-    function gammaF() {   
+    // function gammaF() {   
 
-      if (gammaCont.style.display === 'none') {
-        gammaCont.style.display = 'block';
-      } else {
-        gammaCont.style.display = 'none';
-      }
-    }
+    //   if (gammaCont.style.display === 'none') {
+    //     gammaCont.style.display = 'block';
+    //   } else {
+    //     gammaCont.style.display = 'none';
+    //   }
+    // }
 
     gammaSlider.addEventListener("input", () => {
       applyGammaCorrection(parseFloat(gammaSlider.value));
@@ -246,15 +255,6 @@
     };
 
 
-    // image.onload = () => {
-    //   canvas.width = image.naturalWidth;
-    //   canvas.height = image.naturalHeight;
-    //   ctx.drawImage(image, 0, 0);
-    //   originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    //   applyChanges(0, 0, 0, 1, 1, 1); // Default
-    // };
-
-
     // sRGB (0–1) to Linear RGB
     function sRGBToLinear(c) {
       c = c / 255;
@@ -267,6 +267,22 @@
         12.92 * c :
         1.055 * Math.pow(c, 1 / 2.4) - 0.055;
     }
+
+
+    let shadowStrength;
+    let lightStrength;
+    let exposureStrength;
+    let r;
+    let g;
+    let b;
+    let shadowsTintStrenth;
+    let redHueStrenth;
+    let redSatStrength;
+    let greenHueStrenth;
+    let greenSatStrength;
+    let blueHueStrenth;
+    let blueSatStrength;
+    let lut;
 
 
     [
@@ -285,19 +301,19 @@
       blueSat
     ].forEach(slider => {
       slider.addEventListener("input", () => {
-        const shadowStrength = parseFloat(shadowSlider.value);
-        const lightStrength = parseFloat(lightSlider.value);
-        const exposureStrength = parseFloat(exposureSlider.value);
-        const r = parseFloat(redSlider.value);
-        const g = parseFloat(greenSlider.value);
-        const b = parseFloat(blueSlider.value);
-        const shadowsTintStrenth = parseFloat(shadowsTint.value);
-        const redHueStrenth = parseFloat(redHue.value);
-        const redSatStrength = parseFloat(redSat.value);
-        const greenHueStrenth = parseFloat(greenHue.value);
-        const greenSatStrength = parseFloat(greenSat.value);
-        const blueHueStrenth = parseFloat(blueHue.value); 
-        const blueSatStrength = parseFloat(blueSat.value);
+        shadowStrength = parseFloat(shadowSlider.value);
+        lightStrength = parseFloat(lightSlider.value);
+        exposureStrength = parseFloat(exposureSlider.value);
+        r = parseFloat(redSlider.value);
+        g = parseFloat(greenSlider.value);
+        b = parseFloat(blueSlider.value);
+        shadowsTintStrenth = parseFloat(shadowsTint.value);
+        redHueStrenth = parseFloat(redHue.value);
+        redSatStrength = parseFloat(redSat.value);
+        greenHueStrenth = parseFloat(greenHue.value);
+        greenSatStrength = parseFloat(greenSat.value);
+        blueHueStrenth = parseFloat(blueHue.value); 
+        blueSatStrength = parseFloat(blueSat.value);
         applyChanges(
           exposureStrength, 
           shadowStrength, 
@@ -312,6 +328,7 @@
           greenSatStrength, 
           blueHueStrenth, 
           blueSatStrength,
+          // lut,
         )
       });
     });
@@ -331,8 +348,16 @@
       greenSatStrength, 
       blueHueStrength, 
       blueSatStrength,
+      // lut,
     ) {
       if (!previewImage) return;
+
+      console.log('lut--------------', lut)
+
+      if (!lut) {
+        lut = Array.from({ length: 256 }, (_, i) => i);  // ✅ use identity LUT if missing
+        console.log('!lut--------------', lut)
+      }
 
       const imageData = new ImageData(
         new Uint8ClampedArray(previewImage.data),
@@ -346,6 +371,11 @@
         let r = data[i];
         let g = data[i + 1];
         let b = data[i + 2];
+
+        // === CURVE LUT
+        data[i]     = lut[data[i]];     // R
+        data[i + 1] = lut[data[i + 1]]; // G
+        data[i + 2] = lut[data[i + 2]]; // B
 
         // Luma approximation (brightness)
         let brightness = 0.299 * r + 0.587 * g + 0.114 * b;
@@ -390,36 +420,36 @@
         data[i + 1] = Math.min(255, r * (1 - shadowsTintStrength / 2));
         data[i + 2] = Math.min(255, b * (1 - shadowsTintStrength / 2));
         // if (brightness < 100) {
-        //   g = g * (1 + shadowsTintStrength);
-        //   r = r * (1 - shadowsTintStrength / 2);
-        //   b = b * (1 - shadowsTintStrength / 2);
+        //   lg = lg * (1 + shadowsTintStrength);
+        //   lr = lr * (1 - shadowsTintStrength / 2);
+        //   lb = lb * (1 - shadowsTintStrength / 2);
         // }
 
         // === Red Primary Hue + Sat (affects reds more)
         // if (r > g && r > b) {
-          lr += redHueStrength * (lg - lb);
-          lr *= redSatStrength;
+          r += redHueStrength * (g - b);
+          r *= redSatStrength;
         // }
 
         // === Green Primary Hue + Sat (affects greens more)
         // if (g > r && g > b) {
-          lg += greenHueStrength * (lb - lr);
-          lg *= greenSatStrength;
+          g += greenHueStrength * (b - r);
+          g *= greenSatStrength;
         // }
 
         // === Blue Primary Hue + Sat (affects blues more)
         // if (b > r && b > g) {
-          lb += blueHueStrength * (lr - lg);
-          lb *= blueSatStrength;
+          b += blueHueStrength * (r - g);
+          b *= blueSatStrength;
         // }
 
-        // data[i] = Math.min(255, Math.max(0, r));
-        // data[i + 1] = Math.min(255, Math.max(0, g));
-        // data[i + 2] = Math.min(255, Math.max(0, b));
+        data[i] = Math.min(255, Math.max(0, r));
+        data[i + 1] = Math.min(255, Math.max(0, g));
+        data[i + 2] = Math.min(255, Math.max(0, b));
         // Convert back to sRGB
-        data[i]     = Math.min(255, linearToSRGB(lr) * 255);
-        data[i + 1] = Math.min(255, linearToSRGB(lg) * 255);
-        data[i + 2] = Math.min(255, linearToSRGB(lb) * 255);
+        // data[i]     = Math.min(255, linearToSRGB(lr) * 255);
+        // data[i + 1] = Math.min(255, linearToSRGB(lg) * 255);
+        // data[i + 2] = Math.min(255, linearToSRGB(lb) * 255);
 
       }
 
@@ -452,6 +482,170 @@
         isDragging = false;
         gammaCont.style.cursor = "grab";
     });
+
+
+    // CURVE LOGIC
+    let curvePoints = [
+    { x: 0, y: 0 },
+    { x: 64, y: 64 },
+    { x: 128, y: 128 },
+    { x: 192, y: 192 },
+    { x: 255, y: 255 }
+  ];
+
+  function getCurveLUT(points) {
+    lut = new Uint8ClampedArray(256);
+    for (let i = 0; i < 256; i++) {
+      lut[i] = applyCurve(i, points);
+    }
+    return lut;
+  }
+
+  function applyCurve(value, points) {
+    // Linear interpolation between points
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      if (value >= p1.x && value <= p2.x) {
+        const ratio = (value - p1.x) / (p2.x - p1.x);
+        return Math.round(p1.y + ratio * (p2.y - p1.y));
+      }
+    }
+    return value; // fallback
+  }
+
+  const canvas = document.getElementById("curveCanvas");
+  const ctx = canvas.getContext("2d");
+  const pointRadius = 5;
+
+  // canvas.addEventListener("mousedown", onMouseDown);
+  canvas.addEventListener("mousedown", e => {
+    e.stopPropagation();  // ✅ prevent canvas toggle behavior
+    onMouseDown(e);
+  });
+  canvas.addEventListener("mousemove", e => {
+    if (dragging !== null) {
+      onMouseMove(e);  // this should update the curve + image only when dragging
+    }
+  });
+
+
+  // canvas.addEventListener("mousemove", onMouseMove);
+  canvas.addEventListener("mouseup", () => dragging = null);
+  canvas.addEventListener("mouseleave", () => dragging = null);
+
+  let dragging = null;
+
+  function drawCurve() {
+    // canvas.style.display = canvas.style.display === "block" ? "none" : "block";
+    canvas.style.cursor = "crosshair";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "white";
+    ctx.beginPath();
+    for (let i = 0; i < curvePoints.length; i++) {
+      const p = curvePoints[i];
+      const px = p.x * canvas.width / 255;
+      const py = canvas.height - p.y * canvas.height / 255;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // Draw points
+    curvePoints.forEach((p, i) => {
+      const px = p.x * canvas.width / 255;
+      const py = canvas.height - p.y * canvas.height / 255;
+      ctx.beginPath();
+      ctx.arc(px, py, pointRadius, 0, Math.PI * 2);
+      ctx.fillStyle = "white";
+      ctx.fill();
+    });
+  }
+
+  function getMousePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  function onMouseDown(e) {
+    const pos = getMousePos(e);
+    const cx = pos.x * 255 / canvas.width;
+    const cy = (canvas.height - pos.y) * 255 / canvas.height;
+
+    for (let i = 0; i < curvePoints.length; i++) {
+      const p = curvePoints[i];
+      const px = p.x * canvas.width / 255;
+      const py = canvas.height - p.y * canvas.height / 255;
+      const dx = pos.x - px;
+      const dy = pos.y - py;
+      if (dx * dx + dy * dy < pointRadius * pointRadius * 4) {
+        dragging = i;
+        break;
+      }
+    }
+  }
+
+  function onMouseMove(e) {
+    if (dragging === null) return;
+    const pos = getMousePos(e);
+    const x = Math.max(0, Math.min(255, pos.x * 255 / canvas.width));
+    const y = Math.max(0, Math.min(255, (canvas.height - pos.y) * 255 / canvas.height));
+
+    curvePoints[dragging].x = x;
+    curvePoints[dragging].y = y;
+
+    curvePoints.sort((a, b) => a.x - b.x); // Maintain order
+    drawCurve();
+    lut = getCurveLUT(curvePoints);
+    console.log('onMouseMove----------', lut)
+    if (lut !== 'undefined') {
+      applyChanges(
+      exposureStrength, 
+      shadowStrength, 
+      lightStrength, 
+      redShift,
+      greenShift,
+      blueShift,
+      shadowsTintStrength, 
+      redHueStrength, 
+      redSatStrength,
+      greenHueStrength, 
+      greenSatStrength, 
+      blueHueStrength, 
+      blueSatStrength,
+      // lut,
+    ) 
+    }
+    // applyToneCurveToImage(lut);
+    
+  };
+
+
+  function applyToneCurveToImage(lut) {
+    if (!previewImage) return;
+
+    console.log('applyToneCurveToImage', lut)
+
+    const imageData = new ImageData(
+      new Uint8ClampedArray(previewImage.data),
+      previewImage.width,
+      previewImage.height
+    );
+
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      data[i]     = lut[data[i]];     // R
+      data[i + 1] = lut[data[i + 1]]; // G
+      data[i + 2] = lut[data[i + 2]]; // B
+    }
+
+    previewCtx.putImageData(imageData, 0, 0);
+    res.src = previewCanvas.toDataURL();
+  }
 
 
 

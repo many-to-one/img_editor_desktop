@@ -1,15 +1,17 @@
 #gammaCont {
-    display: none;
-    /* flex-direction: row;
-    justify-content: space-between;
-    align-items: center; */
+    display: block;
+    border-left: 1px solid white;
+    background-color: rgb(40, 40, 40);
     padding: 10px;
     position: absolute;
-    top: 50;
-    left: 50;
-    background-color: white;
-    width: 300px;
-    max-height: 500px;
+    top: 30px;
+    right: 0;
+    width: auto;
+    max-height: 94vh;
     cursor: grab;
     overflow-y: auto;
+}
+
+#gammaCont p {
+    color: white;
 }

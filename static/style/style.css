@@ -27,14 +27,18 @@
     justify-content: center;
     align-items: center;
     background-color: rgb(40, 40, 40);
-    /* width: auto;
-    min-width: 500px;
-    height: auto;
-    min-height: 500px; */
     width: 100%;
     height: 100%;
     border: 1px solid black; 
 }
+
+/* #workspace {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+} */
 
 .window-cont {
     display: flex;
@@ -45,7 +49,7 @@
 }
 
 img {
-     max-width: 400px; 
+     max-width: 1000px; 
      margin: 10px;   
     }
 
@@ -57,3 +61,6 @@ img {
     left: 50%
 }
 
+input {
+    color: white;
+}
