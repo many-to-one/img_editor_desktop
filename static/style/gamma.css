@@ -9,6 +9,7 @@
     left: 50;
     background-color: white;
     width: 300px;
-    height: auto;
+    max-height: 500px;
     cursor: grab;
+    overflow-y: auto;
 }

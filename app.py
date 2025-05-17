@@ -1,11 +1,31 @@
 import webview
 import base64
+import rawpy
+import imageio
 from PIL import Image, ImageOps
 from io import BytesIO
 import os
 from rembg import remove
 
 class Api:
+
+    def load_image_from_base64(self, base64_data, filename):
+        print('load_image_from_base64********************', filename)
+        ext = os.path.splitext(filename)[1].lower()
+        binary_data = base64.b64decode(base64_data)
+
+        if ext in ['.cr2', '.nef', '.arw', '.dng', '.rw2']:
+            with open("temp.raw", "wb") as f:
+                f.write(binary_data)
+            with rawpy.imread("temp.raw") as raw:
+                rgb = raw.postprocess()
+                img = Image.fromarray(rgb)
+        else:
+            img = Image.open(BytesIO(binary_data)).convert("RGB")
+
+        output = BytesIO()
+        img.save(output, format="PNG")
+        return f"data:image/png;base64,{base64.b64encode(output.getvalue()).decode()}"
 
     def process_image(self, image_data):
         try:
@@ -135,4 +155,4 @@ if __name__ == '__main__':
     api = Api()
     window = webview.create_window('Image Processor', 'gui.html', js_api=api, width=800, height=600)
     # webview.windows[0].load_url("gui.html")
-    webview.start(debug=True)
+    webview.start(debug=True,)

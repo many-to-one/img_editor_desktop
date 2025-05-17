@@ -4,13 +4,14 @@
   <title>Image Processor</title>
   <link rel="stylesheet" href="static/style/style.css?v=2">
   <link rel="stylesheet" href="static/style/gamma.css?v=2">
+  <link rel="stylesheet" href="static/style/messages.css?v=2">
 </head>
 <body>
 
   <div class="main-container">
 
     <div class="nav-cont">
-        <button onclick="uploadImage()">BW</button>
+        <button onclick="BW()">BW</button>
         <button onclick="removeBG()">Remove BG</button>
         <button onclick="gammaF()">Gamma</button>
     </div>
@@ -18,15 +19,19 @@
     <div class="window-cont">
 
       <div class="h-nav">
-        <input type="file" id="fileInput"><br>
+        <input type="file" id="fileInput" accept=".jpg, .JPG, .jpeg, .png, .cr2, .nef, .arw, .dng, .rw2">
         <button onclick="location.reload()">Reload App</button>
       </div>
 
       <div class="desctop">
         <p id="load">Processing...</p>
+        <p id="dialogWindow"></p>
 
-        <canvas id="imageCanvas" style="display:none;"></canvas>
-         <!-- <canvas id="imageCanvas" width="300" height="300"></canvas> -->
+        <!-- <canvas id="imageCanvas" style="display:none;"></canvas> -->
+        <canvas id="previewCanvas" style="display:none;" width="1000" height="1000"></canvas>
+        <canvas id="fullCanvas" style="display:none;"></canvas>
+
+
         <div id="gammaCont">
             <p id="gammaVal">Brightness</p>
             <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
@@ -41,13 +46,31 @@
             <input type="range" id="lightSlider" min="-10" max="10" step="1" value="0">
 
             <p>Red</p>
-            <input type="range" id="redSlider" min="-10" max="10" step="1" value="1">
+            <input type="range" id="redSlider" min="-10" max="10" step="0.1" value="1">
 
             <p>Green</p>
-            <input type="range" id="greenSlider" min="-10" max="10" step="1" value="1">
+            <input type="range" id="greenSlider" min="-10" max="10" step="0.1" value="1">
 
             <p>Blue</p>
-            <input type="range" id="blueSlider" min="-10" max="10" step="1" value="1">
+            <input type="range" id="blueSlider" min="-10" max="10" step="0.1" value="1">
+
+            <p>Shadows Tint (Green ↔ Magenta)</p>
+            <input type="range" id="shadowsTint" min="-10" max="10" step="1" value="1"><br>
+
+            <p>Red Primary Hue</p>
+            <input type="range" id="redHue" min="-1" max="1" step="0.01" value="0"><br>
+            <p>Red Primary Saturation</p>
+            <input type="range" id="redSat" min="0" max="2" step="0.01" value="1"><br>
+
+            <p>Green Primary Hue</p>
+            <input type="range" id="greenHue" min="-1" max="1" step="0.01" value="0"><br>
+            <p>Green Primary Saturation</p>
+            <input type="range" id="greenSat" min="0" max="2" step="0.01" value="1"><br>
+
+            <p>Blue Primary Hue</p>
+            <input type="range" id="blueHue" min="-1" max="1" step="0.01" value="0"><br>
+            <p>Blue Primary Saturation</p>
+            <input type="range" id="blueSat" min="0" max="2" step="0.01" value="1"><br>
 
         </div>
 
@@ -66,25 +89,72 @@
     let image = document.getElementById('original')
     let res = document.getElementById('res')
     let load = document.getElementById('load')
-    const canvas       = document.getElementById("imageCanvas");
-    const ctx          = canvas.getContext("2d");
+    // const canvas       = document.getElementById("imageCanvas");
+    // const ctx          = canvas.getContext("2d");
+    const previewCanvas       = document.getElementById("previewCanvas");
+    const previewCtx          = previewCanvas.getContext("2d");
+    const fullCanvas       = document.getElementById("fullCanvas");
+    const fullCtx          = fullCanvas.getContext("2d");
     const gammaCont = document.getElementById("gammaCont");
+
+    const dialogWindow = document.getElementById('dialogWindow');
 
 
     // CHOOSE THE IMAGE
-    document.getElementById('fileInput').addEventListener('change', function (e) {
-      const reader = new FileReader();
-      reader.onload = function () {
-        base64Image = reader.result;
-        image.src = base64Image;
-      };
-      reader.readAsDataURL(e.target.files[0]);
-    });
+    // document.getElementById('fileInput').addEventListener('change', function (e) {
+    //   const reader = new FileReader();
+    //   reader.onload = function () {
+    //     base64Image = reader.result;
+    //     image.src = base64Image;
+    //   };
+    //   reader.readAsDataURL(e.target.files[0]);
+    // });
 
-    // var originalImageData = null
 
-    // UPLOAD THE IMAGE
-    async function uploadImage() {
+    window.addEventListener('pywebviewready', () => {
+      const image = document.getElementById('original');
+      const fileInput = document.getElementById('fileInput');
+
+      fileInput.addEventListener('change', async () => {
+        dialogWindow.style.display = 'block';
+        const file = fileInput.files[0];
+        console.log('---------Filename----------', file.name);
+        if (!file) return;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const base64 = await arrayBufferToBase64(arrayBuffer);
+        try {
+          dialogWindow.innerText = `${file.name} is loading...`;
+          const previewDataUrl = await window.pywebview.api.load_image_from_base64(base64, file.name);
+          image.src = previewDataUrl;
+          base64Image = previewDataUrl;
+          dialogWindow.style.display = 'none';
+        } catch (err) {
+          dialogWindow.innerText = `Error ${err}`;
+        }
+      });
+
+      function arrayBufferToBase64(buffer) {
+        return new Promise((resolve, reject) => {
+          const blob = new Blob([buffer], { type: 'application/octet-stream' });
+          const reader = new FileReader();
+
+          reader.onloadend = () => {
+            const base64 = reader.result.split(',')[1]; // remove `data:...;base64,`
+            resolve(base64);
+          };
+
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+
+  });
+
+
+
+    // Black and white
+    async function BW() {
       if (!base64Image) return alert("Please select an image first.");
 
       const result = await window.pywebview.api.process_image(base64Image);
@@ -141,46 +211,133 @@
     const redSlider = document.getElementById("redSlider");
     const greenSlider = document.getElementById("greenSlider");
     const blueSlider = document.getElementById("blueSlider");
+    const shadowsTint = document.getElementById("shadowsTint");
+    const redHue = document.getElementById("redHue");
+    const redSat = document.getElementById("redSat");
+    const greenHue = document.getElementById("greenHue");
+    const greenSat = document.getElementById("greenSat");
+    const blueHue = document.getElementById("blueHue");
+    const blueSat = document.getElementById("blueSat");
 
 
     let originalImage = null; //new Image();
+    let previewImage = null;
 
     image.onload = () => {
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      ctx.drawImage(image, 0, 0);
-      originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      applyChanges(0, 0, 0, 1, 1, 1); // Default
+      // Full-size canvas
+      fullCanvas.width = image.naturalWidth;
+      fullCanvas.height = image.naturalHeight;
+      fullCtx.drawImage(image, 0, 0);
+
+      originalImage = fullCtx.getImageData(0, 0, fullCanvas.width, fullCanvas.height);
+
+      // Downscale for preview
+      const previewSize = 1000;
+      const scale = Math.min(previewSize / image.naturalWidth, previewSize / image.naturalHeight);
+
+      previewCanvas.width = image.naturalWidth * scale;
+      previewCanvas.height = image.naturalHeight * scale;
+
+      previewCtx.drawImage(image, 0, 0, previewCanvas.width, previewCanvas.height);
+      previewImage = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+
+      // Draw initial preview
+      applyChanges(0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1); // Default
     };
 
 
+    // image.onload = () => {
+    //   canvas.width = image.naturalWidth;
+    //   canvas.height = image.naturalHeight;
+    //   ctx.drawImage(image, 0, 0);
+    //   originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    //   applyChanges(0, 0, 0, 1, 1, 1); // Default
+    // };
 
-    [exposureSlider, shadowSlider, lightSlider, redSlider, greenSlider, blueSlider].forEach(slider => {
-    // [exposureSlider, shadowSlider, lightSlider].forEach(slider => {
+
+    // sRGB (0–1) to Linear RGB
+    function sRGBToLinear(c) {
+      c = c / 255;
+      return (c <= 0.04045) ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    }
+
+    // Linear RGB to sRGB (0–1)
+    function linearToSRGB(c) {
+      return (c <= 0.0031308) ?
+        12.92 * c :
+        1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+    }
+
+
+    [
+      exposureSlider, 
+      shadowSlider, 
+      lightSlider, 
+      redSlider, 
+      greenSlider, 
+      blueSlider,
+      shadowsTint, 
+      redHue, 
+      redSat,
+      greenHue, 
+      greenSat, 
+      blueHue, 
+      blueSat
+    ].forEach(slider => {
       slider.addEventListener("input", () => {
         const shadowStrength = parseFloat(shadowSlider.value);
         const lightStrength = parseFloat(lightSlider.value);
         const exposureStrength = parseFloat(exposureSlider.value);
-        const r = parseInt(redSlider.value);
-        const g = parseInt(greenSlider.value);
-        const b = parseInt(blueSlider.value);
-        applyChanges(exposureStrength, shadowStrength, lightStrength, r, g, b);
-        // applyChanges();
+        const r = parseFloat(redSlider.value);
+        const g = parseFloat(greenSlider.value);
+        const b = parseFloat(blueSlider.value);
+        const shadowsTintStrenth = parseFloat(shadowsTint.value);
+        const redHueStrenth = parseFloat(redHue.value);
+        const redSatStrength = parseFloat(redSat.value);
+        const greenHueStrenth = parseFloat(greenHue.value);
+        const greenSatStrength = parseFloat(greenSat.value);
+        const blueHueStrenth = parseFloat(blueHue.value); 
+        const blueSatStrength = parseFloat(blueSat.value);
+        applyChanges(
+          exposureStrength, 
+          shadowStrength, 
+          lightStrength, 
+          r,
+          g,
+          b,
+          shadowsTintStrenth, 
+          redHueStrenth, 
+          redSatStrength,
+          greenHueStrenth, 
+          greenSatStrength, 
+          blueHueStrenth, 
+          blueSatStrength,
+        )
       });
     });
 
-    
 
-
-
-    function applyChanges(exposureStrength, shadowStrength, lightStrength, redShift, greenShift, blueShift) {
-    // function applyChanges() {
-      if (!originalImage) return;
+    function applyChanges(
+      exposureStrength, 
+      shadowStrength, 
+      lightStrength, 
+      redShift,
+      greenShift,
+      blueShift,
+      shadowsTintStrength, 
+      redHueStrength, 
+      redSatStrength,
+      greenHueStrength, 
+      greenSatStrength, 
+      blueHueStrength, 
+      blueSatStrength,
+    ) {
+      if (!previewImage) return;
 
       const imageData = new ImageData(
-        new Uint8ClampedArray(originalImage.data),
-        originalImage.width,
-        originalImage.height
+        new Uint8ClampedArray(previewImage.data),
+        previewImage.width,
+        previewImage.height
       );
 
       const data = imageData.data;
@@ -195,9 +352,20 @@
 
         // Exposure factor: commonly 2^EV (Exposure Value)
         const exposureFactor = Math.pow(2, exposureStrength); // e.g., EV +1 = 2x brighter
-        data[i]     = Math.min(255, r * exposureFactor);
-        data[i + 1] = Math.min(255, g * exposureFactor);
-        data[i + 2] = Math.min(255, b * exposureFactor);
+        // Convert to linear
+        let lr = sRGBToLinear(r);
+        let lg = sRGBToLinear(g);
+        let lb = sRGBToLinear(b);
+
+        // Apply exposure in linear space
+        lr *= exposureFactor;
+        lg *= exposureFactor;
+        lb *= exposureFactor;
+
+
+        // data[i]     = Math.min(255, r * exposureFactor);
+        // data[i + 1] = Math.min(255, g * exposureFactor);
+        // data[i + 2] = Math.min(255, b * exposureFactor);
 
         data[i]     = Math.min(255, r * redShift);
         data[i + 1] = Math.min(255, g * greenShift);
@@ -214,13 +382,49 @@
           const factor = 1 + lightStrength  * ((brightness - 155) / 100);
           data[i]  = Math.min(255, Math.max(0, r * factor));
           data[i + 1] = Math.min(255, Math.max(0, g * factor));
-          data[i + 2] = Math.min(255, Math.max(0, b * factor));
+          data[i + 2] = Math.min(255, Math.max(0, b * factor)); 
         }
+
+        // === Shadows Tint (Green ↔ Magenta)
+        data[i]     = Math.min(255, g * (1 + shadowsTintStrength));
+        data[i + 1] = Math.min(255, r * (1 - shadowsTintStrength / 2));
+        data[i + 2] = Math.min(255, b * (1 - shadowsTintStrength / 2));
+        // if (brightness < 100) {
+        //   g = g * (1 + shadowsTintStrength);
+        //   r = r * (1 - shadowsTintStrength / 2);
+        //   b = b * (1 - shadowsTintStrength / 2);
+        // }
+
+        // === Red Primary Hue + Sat (affects reds more)
+        // if (r > g && r > b) {
+          lr += redHueStrength * (lg - lb);
+          lr *= redSatStrength;
+        // }
+
+        // === Green Primary Hue + Sat (affects greens more)
+        // if (g > r && g > b) {
+          lg += greenHueStrength * (lb - lr);
+          lg *= greenSatStrength;
+        // }
+
+        // === Blue Primary Hue + Sat (affects blues more)
+        // if (b > r && b > g) {
+          lb += blueHueStrength * (lr - lg);
+          lb *= blueSatStrength;
+        // }
+
+        // data[i] = Math.min(255, Math.max(0, r));
+        // data[i + 1] = Math.min(255, Math.max(0, g));
+        // data[i + 2] = Math.min(255, Math.max(0, b));
+        // Convert back to sRGB
+        data[i]     = Math.min(255, linearToSRGB(lr) * 255);
+        data[i + 1] = Math.min(255, linearToSRGB(lg) * 255);
+        data[i + 2] = Math.min(255, linearToSRGB(lb) * 255);
 
       }
 
-      ctx.putImageData(imageData, 0, 0);
-      res.src = canvas.toDataURL();
+      previewCtx.putImageData(imageData, 0, 0);
+      res.src = previewCanvas.toDataURL();
     }
 
 
