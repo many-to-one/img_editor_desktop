@@ -14,7 +14,7 @@
         <button onclick="BW()">BW</button>
         <button onclick="removeBG()">Remove BG</button>
         <button onclick="gammaF()">Gamma</button>
-        <button onclick="drawCurve()">Curve</button>
+        
     </div>
 
     <div class="window-cont">
@@ -39,6 +39,7 @@
 
           <div id="gammaCont">
 
+              <!-- <button onclick="drawCurve()">Curve</button> -->
               <canvas id="curveCanvas" width="300" height="300" style="display:block; border:1px solid #ffffff;"></canvas>
 
               <p id="gammaVal">Brightness</p>
@@ -48,10 +49,10 @@
               <input type="range" id="exposureSlider" min="-10" max="10" step="1" value="0">
 
               <p id="shadowVal">Shadows</p>
-              <input type="range" id="shadowSlider" min="-10" max="10" step="1" value="0">
+              <input type="range" id="shadowSlider" min="-1" max="1" step="0.01" value="0">
 
               <p id="lightVal">Lights</p>
-              <input type="range" id="lightSlider" min="-10" max="10" step="1" value="0">
+              <input type="range" id="lightSlider" min="-1" max="1" step="0.01" value="0">
 
               <p>Red</p>
               <input type="range" id="redSlider" min="-10" max="10" step="0.1" value="1">
@@ -194,16 +195,6 @@
 
     const gammaSlider = document.getElementById("gammaSlider");
 
-    // MANIPULATE WITH THE BRIGHTNESS
-    // function gammaF() {   
-
-    //   if (gammaCont.style.display === 'none') {
-    //     gammaCont.style.display = 'block';
-    //   } else {
-    //     gammaCont.style.display = 'none';
-    //   }
-    // }
-
     gammaSlider.addEventListener("input", () => {
       applyGammaCorrection(parseFloat(gammaSlider.value));
     });
@@ -231,6 +222,7 @@
 
     let originalImage = null; //new Image();
     let previewImage = null;
+    let bufferImage = null;
 
     image.onload = () => {
       // Full-size canvas
@@ -250,8 +242,11 @@
       previewCtx.drawImage(image, 0, 0, previewCanvas.width, previewCanvas.height);
       previewImage = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
 
+      // bufferInit();
+
       // Draw initial preview
-      applyChanges(0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1); // Default
+      applyChanges(0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1);
+      // applyChanges(0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1); // Default
     };
 
 
@@ -353,6 +348,7 @@
       if (!previewImage) return;
 
       console.log('lut--------------', lut)
+      console.log('redHueStrength--------------', redHueStrength)
 
       if (!lut) {
         lut = Array.from({ length: 256 }, (_, i) => i);  // ✅ use identity LUT if missing
@@ -366,6 +362,7 @@
       );
 
       const data = imageData.data;
+      bufferImage = imageData;
 
       for (let i = 0; i < data.length; i += 4) {
         let r = data[i];
@@ -373,9 +370,9 @@
         let b = data[i + 2];
 
         // === CURVE LUT
-        data[i]     = lut[data[i]];     // R
-        data[i + 1] = lut[data[i + 1]]; // G
-        data[i + 2] = lut[data[i + 2]]; // B
+        r = lut[r];     // R
+        g = lut[g]; // G
+        b = lut[b]; // B
 
         // Luma approximation (brightness)
         let brightness = 0.299 * r + 0.587 * g + 0.114 * b;
@@ -383,42 +380,37 @@
         // Exposure factor: commonly 2^EV (Exposure Value)
         const exposureFactor = Math.pow(2, exposureStrength); // e.g., EV +1 = 2x brighter
         // Convert to linear
-        let lr = sRGBToLinear(r);
-        let lg = sRGBToLinear(g);
-        let lb = sRGBToLinear(b);
+        // let lr = sRGBToLinear(r);
+        // let lg = sRGBToLinear(g);
+        // let lb = sRGBToLinear(b);
 
         // Apply exposure in linear space
-        lr *= exposureFactor;
-        lg *= exposureFactor;
-        lb *= exposureFactor;
+        r *= exposureFactor;
+        g *= exposureFactor;
+        b *= exposureFactor;
 
-
-        // data[i]     = Math.min(255, r * exposureFactor);
-        // data[i + 1] = Math.min(255, g * exposureFactor);
-        // data[i + 2] = Math.min(255, b * exposureFactor);
-
-        data[i]     = Math.min(255, r * redShift);
-        data[i + 1] = Math.min(255, g * greenShift);
-        data[i + 2] = Math.min(255, b * blueShift);
+        // r = Math.min(255, r * redShift);
+        // g = Math.min(255, g * greenShift);
+        // b = Math.min(255, b * blueShift);
 
         if (brightness < 100) {
           const factor = 1 + shadowStrength * (1 - brightness / 100);
-          data[i]     = Math.min(255, r * factor);
-          data[i + 1] = Math.min(255, g * factor);
-          data[i + 2] = Math.min(255, b * factor);
+          r = Math.min(255, r * factor);
+          g = Math.min(255, g * factor);
+          b = Math.min(255, b * factor);
         }
 
         if (brightness > 155) {
           const factor = 1 + lightStrength  * ((brightness - 155) / 100);
-          data[i]  = Math.min(255, Math.max(0, r * factor));
-          data[i + 1] = Math.min(255, Math.max(0, g * factor));
-          data[i + 2] = Math.min(255, Math.max(0, b * factor)); 
+          r = Math.min(255, Math.max(0, r * factor));
+          g = Math.min(255, Math.max(0, g * factor));
+          b = Math.min(255, Math.max(0, b * factor)); 
         }
 
         // === Shadows Tint (Green ↔ Magenta)
-        data[i]     = Math.min(255, g * (1 + shadowsTintStrength));
-        data[i + 1] = Math.min(255, r * (1 - shadowsTintStrength / 2));
-        data[i + 2] = Math.min(255, b * (1 - shadowsTintStrength / 2));
+        // r = Math.min(255, g * (1 + shadowsTintStrength));
+        // g = Math.min(255, r * (1 - shadowsTintStrength / 2));
+        // b = Math.min(255, b * (1 - shadowsTintStrength / 2));
         // if (brightness < 100) {
         //   lg = lg * (1 + shadowsTintStrength);
         //   lr = lr * (1 - shadowsTintStrength / 2);
@@ -536,8 +528,12 @@
 
   let dragging = null;
 
+  // function openCurve() {
+  //   canvas.style.display = canvas.style.display === "block" ? "none" : "block";
+  //   drawCurve();
+  // }
+
   function drawCurve() {
-    // canvas.style.display = canvas.style.display === "block" ? "none" : "block";
     canvas.style.cursor = "crosshair";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.strokeStyle = "white";
@@ -600,34 +596,32 @@
     curvePoints.sort((a, b) => a.x - b.x); // Maintain order
     drawCurve();
     lut = getCurveLUT(curvePoints);
-    console.log('onMouseMove----------', lut)
-    if (lut !== 'undefined') {
+    // console.log('onMouseMove----------', lut)
       applyChanges(
-      exposureStrength, 
-      shadowStrength, 
-      lightStrength, 
-      redShift,
-      greenShift,
-      blueShift,
-      shadowsTintStrength, 
-      redHueStrength, 
-      redSatStrength,
-      greenHueStrength, 
-      greenSatStrength, 
-      blueHueStrength, 
-      blueSatStrength,
+        parseFloat(shadowSlider.value),
+        parseFloat(lightSlider.value),
+        parseFloat(exposureSlider.value),
+        parseFloat(redSlider.value),
+        parseFloat(greenSlider.value),
+        parseFloat(blueSlider.value),
+        parseFloat(shadowsTint.value),
+        parseFloat(redHue.value),
+        parseFloat(redSat.value),
+        parseFloat(greenHue.value),
+        parseFloat(greenSat.value),
+        parseFloat(blueHue.value),
+        parseFloat(blueSat.value),
       // lut,
     ) 
-    }
-    // applyToneCurveToImage(lut);
+    // applyToneCurveToImage();
     
   };
 
 
-  function applyToneCurveToImage(lut) {
+  function applyToneCurveToImage() {
     if (!previewImage) return;
 
-    console.log('applyToneCurveToImage', lut)
+    console.log('applyToneCurveToImage------------', lut)
 
     const imageData = new ImageData(
       new Uint8ClampedArray(previewImage.data),
@@ -635,7 +629,7 @@
       previewImage.height
     );
 
-    const data = imageData.data;
+    const data =  imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
       data[i]     = lut[data[i]];     // R
@@ -643,8 +637,10 @@
       data[i + 2] = lut[data[i + 2]]; // B
     }
 
+    bufferImage.data = data
     previewCtx.putImageData(imageData, 0, 0);
     res.src = previewCanvas.toDataURL();
+
   }
 
 
