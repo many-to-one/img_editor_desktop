@@ -1,0 +1,16 @@
+----------------- 1. Convert app into an Executable (.exe): -----------------
+
+Use PyInstaller to package your app:
+
+bash
+pyinstaller --onefile --windowed main.py
+
+
+----------------- 2. Add an Icon: -----------------
+
+Place an .ico file in your project directory.
+
+Modify the PyInstaller command:
+
+bash
+pyinstaller --onefile --windowed --icon=myicon.ico main.py
