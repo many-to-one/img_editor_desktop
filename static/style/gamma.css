@@ -12,6 +12,26 @@
     overflow-y: auto;
 }
 
+#gammaCont h4 {
+    color: white;
+    font-family: Poppins, sans-serif;
+}
+
 #gammaCont p {
     color: white;
+    font-size: 12px;
+    font-family: Poppins, sans-serif;
+}
+
+#curveCont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#editCont {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 5px;
 }

@@ -53,6 +53,11 @@ img {
      margin: 10px;   
     }
 
+#res {
+    margin-left: -320px;
+    height: 700px;
+}
+
 #load {
     display: none;
     z-index: 100;
@@ -63,4 +68,5 @@ img {
 
 input {
     color: white;
+    width: 300px;
 }

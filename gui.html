@@ -40,19 +40,39 @@
           <div id="gammaCont">
 
               <!-- <button onclick="drawCurve()">Curve</button> -->
-              <canvas id="curveCanvas" width="300" height="300" style="display:block; border:1px solid #ffffff;"></canvas>
+              <div id="curveCont">
+                <canvas id="curveCanvas" width="300" height="300" style="display:block; border:1px solid #ffffff;"></canvas>
+              </div>
+              <hr>
 
-              <p id="gammaVal">Brightness</p>
-              <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
+              <div>
+                <h4>Tone</h4>
+                <div id="editCont">
+                  <p id="gammaVal">Brightness</p>
+                  <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
+                  <p id="brightnessValue">0.0</p>
+                </div>
 
-              <p id="exposureVal">Exposure</p>
-              <input type="range" id="exposureSlider" min="-10" max="10" step="1" value="0">
+                <div id="editCont">
+                  <p id="exposureVal">Exposure</p>
+                  <input type="range" id="exposureSlider" min="-10" max="10" step="1" value="0">
+                  <p id="expoValue">0.0</p>
+                </div>
 
-              <p id="shadowVal">Shadows</p>
-              <input type="range" id="shadowSlider" min="-1" max="1" step="0.01" value="0">
+                <div id="editCont">
+                  <p id="shadowVal">Shadows</p>
+                  <input type="range" id="shadowSlider" min="-1" max="1" step="0.01" value="0">
+                  <p id="shadowValue">0.0</p>
+                </div>
 
-              <p id="lightVal">Lights</p>
-              <input type="range" id="lightSlider" min="-1" max="1" step="0.01" value="0">
+                <div id="editCont">
+                  <p id="lightVal">Lights</p>
+                  <input type="range" id="lightSlider" min="-1" max="1" step="0.01" value="0">
+                  <p id="lightValue">0.0</p>
+                </div>
+
+              </div>
+              <hr>
 
               <p>Red</p>
               <input type="range" id="redSlider" min="-10" max="10" step="0.1" value="1">
@@ -202,6 +222,7 @@
     function applyGammaCorrection(gamma) {
       if (!image.src) return;
       res.style.filter = `brightness(${gamma}%)`;
+      document.getElementById("brightnessValue").innerText = gamma;
     }
 
 
@@ -297,8 +318,11 @@
     ].forEach(slider => {
       slider.addEventListener("input", () => {
         shadowStrength = parseFloat(shadowSlider.value);
+        document.getElementById("shadowValue").innerText = shadowStrength;
         lightStrength = parseFloat(lightSlider.value);
+        document.getElementById("lightValue").innerText = lightStrength;
         exposureStrength = parseFloat(exposureSlider.value);
+        document.getElementById("expoValue").innerText = exposureStrength;
         r = parseFloat(redSlider.value);
         g = parseFloat(greenSlider.value);
         b = parseFloat(blueSlider.value);
