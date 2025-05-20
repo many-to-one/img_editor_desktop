@@ -76,6 +76,7 @@
 
               <div id="calibration">
                 <h4>HSL</h4>
+
                 <h5 id="calibTitle">Hue</h5>
                 <div>
                   <div id="editCont">
@@ -119,6 +120,95 @@
                     <p id="magentaHValue">0.0</p>
                   </div>
                 </div>
+
+                <h5 id="calibTitle">Saturation</h5>
+                <div>
+                  <div id="editCont">
+                    <p id="redSVal">Red</p>
+                    <input type="range" id="redSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="redSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="orangeSVal">Orange</p>
+                    <input type="range" id="orangeSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="orangeSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="yellowSVal">Yellow</p>
+                    <input type="range" id="yellowSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="yellowSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="greenSVal">Green</p>
+                    <input type="range" id="greenSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="greenSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="aquaSVal">Aqua</p>
+                    <input type="range" id="aquaSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="aquaSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="blueSVal">Blue</p>
+                    <input type="range" id="blueSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="blueSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="purpleSVal">Purple</p>
+                    <input type="range" id="purpleSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="purpleSValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="magentaSVal">Magenta</p>
+                    <input type="range" id="magentaSSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="magentaSValue">0.0</p>
+                  </div>
+                </div>
+
+                <h5 id="calibTitle">Luminance</h5>
+                <div>
+                  <div id="editCont">
+                    <p id="redLVal">Red</p>
+                    <input type="range" id="redLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="redLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="orangeLVal">Orange</p>
+                    <input type="range" id="orangeLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="orangeLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="yellowLVal">Yellow</p>
+                    <input type="range" id="yellowLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="yellowLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="greenLVal">Green</p>
+                    <input type="range" id="greenLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="greenLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="aquaLVal">Aqua</p>
+                    <input type="range" id="aquaLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="aquaLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="blueLVal">Blue</p>
+                    <input type="range" id="blueLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="blueLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="purpleLVal">Purple</p>
+                    <input type="range" id="purpleLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="purpleLValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="magentaLVal">Magenta</p>
+                    <input type="range" id="magentaLSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="magentaLValue">0.0</p>
+                  </div>
+                </div>
+
               </div>
 
               <hr>
@@ -327,6 +417,7 @@
 
 
     const exposureSlider = document.getElementById("exposureSlider");
+
     const redHSlider = document.getElementById("redHSlider");
     const orangeHSlider = document.getElementById("orangeHSlider");
     const yellowHSlider = document.getElementById("yellowHSlider");
@@ -335,6 +426,25 @@
     const blueHSlider = document.getElementById("blueHSlider");
     const purpleHSlider = document.getElementById("purpleHSlider");
     const magentaHSlider = document.getElementById("magentaHSlider");
+
+    const redSSlider = document.getElementById("redSSlider");
+    const orangeSSlider = document.getElementById("orangeSSlider");
+    const yellowSSlider = document.getElementById("yellowSSlider");
+    const greenSSlider = document.getElementById("greenSSlider");
+    const aquaSSlider = document.getElementById("aquaSSlider");
+    const blueSSlider = document.getElementById("blueSSlider");
+    const purpleSSlider = document.getElementById("purpleSSlider");
+    const magentaSSlider = document.getElementById("magentaSSlider");
+
+    const redLSlider = document.getElementById("redLSlider");
+    const orangeLSlider = document.getElementById("orangeLSlider");
+    const yellowLSlider = document.getElementById("yellowLSlider");
+    const greenLSlider = document.getElementById("greenLSlider");
+    const aquaLSlider = document.getElementById("aquaLSlider");
+    const blueLSlider = document.getElementById("blueLSlider");
+    const purpleLSlider = document.getElementById("purpleLSlider");
+    const magentaLSlider = document.getElementById("magentaLSlider");
+
     const shadowSlider = document.getElementById("shadowSlider");
     const lightSlider  = document.getElementById("lightSlider");
     const redSlider = document.getElementById("redSlider");
@@ -396,6 +506,7 @@
     let shadowStrength;
     let lightStrength;
     let exposureStrength;
+
     let redHStrength = 0;
     let orangeHStrength;
     let yellowHStrength;
@@ -404,6 +515,25 @@
     let blueHStrength;
     let purpleHStrength;
     let magentaHStrength;
+
+    let redSStrength = 0;
+    let orangeSStrength;
+    let yellowSStrength;
+    let greenSStrength;
+    let aquaSStrength;
+    let blueSStrength;
+    let purpleSStrength;
+    let magentaSStrength;
+
+    let redLStrength = 0;
+    let orangeLStrength;
+    let yellowLStrength;
+    let greenLStrength;
+    let aquaLStrength;
+    let blueLStrength;
+    let purpleLStrength;
+    let magentaLStrength;
+
     let r;
     let g;
     let b;
@@ -421,9 +551,11 @@
       exposureSlider, 
       shadowSlider, 
       lightSlider, 
+
       redSlider, 
       greenSlider, 
       blueSlider,
+
       redHSlider,
       orangeHSlider,
       yellowHSlider,
@@ -432,6 +564,25 @@
       blueHSlider,
       purpleHSlider,
       magentaHSlider,
+
+      redSSlider,
+      orangeSSlider,
+      yellowSSlider,
+      greenSSlider,
+      aquaSSlider,
+      blueSSlider,
+      purpleSSlider,
+      magentaSSlider,
+
+      redLSlider,
+      orangeLSlider,
+      yellowLSlider,
+      greenLSlider,
+      aquaLSlider,
+      blueLSlider,
+      purpleLSlider,
+      magentaLSlider,
+
       shadowsTint, 
       redHue, 
       redSat,
@@ -447,6 +598,7 @@
         document.getElementById("lightValue").innerText = lightStrength;
         exposureStrength = parseFloat(exposureSlider.value);
         document.getElementById("expoValue").innerText = exposureStrength;
+
         redHStrength = parseFloat(redHSlider.value);
         document.getElementById("redHValue").innerText = redHStrength;
         orangeHStrength = parseFloat(orangeHSlider.value);
@@ -462,14 +614,50 @@
         purpleHStrength = parseFloat(purpleHSlider.value);
         document.getElementById("purpleHValue").innerText = purpleHStrength;
         magentaHStrength = parseFloat(magentaHSlider.value);
-        document.getElementById("redHValue").innerText = magentaHStrength;
-        document.getElementById("redValue").innerText = r;
+        document.getElementById("magentaHValue").innerText = magentaHStrength;
+        document.getElementById("magentaValue").innerText = r;
+
+        redSStrength = parseFloat(redSSlider.value);
+        document.getElementById("redSValue").innerText = redSStrength;
+        orangeSStrength = parseFloat(orangeSSlider.value);
+        document.getElementById("orangeSValue").innerText = orangeSStrength;
+        yellowSStrength = parseFloat(yellowSSlider.value);
+        document.getElementById("yellowSValue").innerText = yellowSStrength;
+        greenSStrength = parseFloat(greenSSlider.value);
+        document.getElementById("greenSValue").innerText = greenSStrength;
+        aquaSStrength = parseFloat(aquaSSlider.value);
+        document.getElementById("aquaSValue").innerText = aquaSStrength;
+        blueSStrength = parseFloat(blueSSlider.value);
+        document.getElementById("blueSValue").innerText = blueSStrength;
+        purpleSStrength = parseFloat(purpleSSlider.value);
+        document.getElementById("purpleSValue").innerText = purpleSStrength;
+        magentaSStrength = parseFloat(magentaSSlider.value);
+        document.getElementById("magentaSValue").innerText = magentaSStrength;
+
+        redLStrength = parseFloat(redLSlider.value);
+        document.getElementById("redLValue").innerText = redLStrength;
+        orangeLStrength = parseFloat(orangeLSlider.value);
+        document.getElementById("orangeLValue").innerText = orangeLStrength;
+        yellowLStrength = parseFloat(yellowLSlider.value);
+        document.getElementById("yellowLValue").innerText = yellowLStrength;
+        greenLStrength = parseFloat(greenLSlider.value);
+        document.getElementById("greenLValue").innerText = greenLStrength;
+        aquaLStrength = parseFloat(aquaLSlider.value);
+        document.getElementById("aquaLValue").innerText = aquaLStrength;
+        blueLStrength = parseFloat(blueLSlider.value);
+        document.getElementById("blueLValue").innerText = blueLStrength;
+        purpleLStrength = parseFloat(purpleLSlider.value);
+        document.getElementById("purpleLValue").innerText = purpleLStrength;
+        magentaLStrength = parseFloat(magentaLSlider.value);
+        document.getElementById("magentaLValue").innerText = magentaLStrength;
+
         r = parseFloat(redSlider.value);
         document.getElementById("redValue").innerText = r;
         g = parseFloat(greenSlider.value);
         document.getElementById("greenValue").innerText = g;
         b = parseFloat(blueSlider.value);
         document.getElementById("blueValue").innerText = b;
+
         shadowsTintStrenth = parseFloat(shadowsTint.value);
         document.getElementById("tintValue").innerText = shadowsTintStrenth;
         redHueStrenth = parseFloat(redHue.value);
@@ -488,11 +676,12 @@
           exposureStrength, 
           shadowStrength, 
           lightStrength, 
+
           r,
           g,
           b,
-          shadowsTintStrenth, 
-          redHueStrenth, 
+
+          redHStrenth, 
           orangeHStrength,
           yellowHStrength,
           greenHStrength,
@@ -500,6 +689,27 @@
           blueHStrength,
           purpleHStrength,
           magentaHStrength,
+
+          redSStrenth, 
+          orangeSStrength,
+          yellowSStrength,
+          greenSStrength,
+          aquaSStrength,
+          blueSStrength,
+          purpleSStrength,
+          magentaSStrength,
+
+          redLStrenth, 
+          orangeLStrength,
+          yellowLStrength,
+          greenLStrength,
+          aquaLStrength,
+          blueLStrength,
+          purpleLStrength,
+          magentaLStrength,
+
+          shadowsTintStrenth,
+
           redSatStrength,
           greenHueStrenth, 
           greenSatStrength, 
@@ -515,11 +725,12 @@
       exposureStrength, 
       shadowStrength, 
       lightStrength, 
+
       redShift,
       greenShift,
       blueShift,
-      shadowsTintStrength, 
-      redHueStrength, 
+
+      redHStrength, 
       orangeHStrength,
       yellowHStrength,
       greenHStrength,
@@ -527,6 +738,26 @@
       blueHStrength,
       purpleHStrength,
       magentaHStrength,
+
+      redSStrength, 
+      orangeSStrength,
+      yellowSStrength,
+      greenSStrength,
+      aquaSStrength,
+      blueSStrength,
+      purpleSStrength,
+      magentaSStrength,
+
+      redLStrength, 
+      orangeLStrength,
+      yellowLStrength,
+      greenLStrength,
+      aquaLStrength,
+      blueLStrength,
+      purpleLStrength,
+      magentaLStrength,
+
+      shadowsTintStrength, 
       redSatStrength,
       greenHueStrength, 
       greenSatStrength, 

@@ -95,6 +95,38 @@ input {
     background: linear-gradient(to right, #33ff00, #ff00c6);
 }
 
+#redHSlider {
+    background: linear-gradient(to right, #ff00c6, #ff4500, #ffee00);
+}
+
+#orangeHSlider {
+    background: linear-gradient(to right, #ff2600, #ff7300, #ffd000);
+}
+
+#yellowHSlider {
+    background: linear-gradient(to right, #ff0000, #ffee00, #5eff00);
+}
+
+#greenHSlider {
+    background: linear-gradient(to right, #009900, #00ff6a, #d0ff00);
+}
+
+#aquaHSlider {
+    background: linear-gradient(to right, #00ccff, #00ffee, #00ff6a);
+}
+
+#blueHSlider {
+    background: linear-gradient(to right, #0011ff, #0066ff, #00ccff);
+}
+
+#purpleHSlider {
+    background: linear-gradient(to right, #800080, #d000ff, #ff00c6);
+}
+
+#magentaHSlider {
+    background: linear-gradient(to right, #ff00c6, #ff0077, #ff2600);
+}
+
 #redHue {
     background: linear-gradient(to right, #ff0055, #ff5e00);
 }

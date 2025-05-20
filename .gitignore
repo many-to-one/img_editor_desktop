@@ -18,4 +18,4 @@ venv/
 # macOS and Linux
 .DS_Store
 
-.raw
+*.raw
