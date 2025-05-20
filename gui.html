@@ -28,7 +28,6 @@
         <p id="load">Processing...</p>
         <p id="dialogWindow"></p>
 
-        <!-- <canvas id="imageCanvas" style="display:none;"></canvas> -->
         <canvas id="previewCanvas" style="display:none;" width="1000" height="1000"></canvas>
         <canvas id="fullCanvas" style="display:none;"></canvas>
 
@@ -45,61 +44,162 @@
               </div>
               <hr>
 
-              <div>
+              <div id="tone">
                 <h4>Tone</h4>
                 <div id="editCont">
                   <p id="gammaVal">Brightness</p>
-                  <input type="range" id="gammaSlider" min="0" max="300" step="10" value="100">
+                  <input type="range" id="gammaSlider" class="sliders" min="0" max="300" step="10" value="100">
                   <p id="brightnessValue">0.0</p>
                 </div>
 
                 <div id="editCont">
                   <p id="exposureVal">Exposure</p>
-                  <input type="range" id="exposureSlider" min="-10" max="10" step="1" value="0">
+                  <input type="range" id="exposureSlider" class="sliders" min="-10" max="10" step="1" value="0">
                   <p id="expoValue">0.0</p>
                 </div>
 
                 <div id="editCont">
                   <p id="shadowVal">Shadows</p>
-                  <input type="range" id="shadowSlider" min="-1" max="1" step="0.01" value="0">
+                  <input type="range" id="shadowSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
                   <p id="shadowValue">0.0</p>
                 </div>
 
                 <div id="editCont">
                   <p id="lightVal">Lights</p>
-                  <input type="range" id="lightSlider" min="-1" max="1" step="0.01" value="0">
+                  <input type="range" id="lightSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
                   <p id="lightValue">0.0</p>
                 </div>
 
               </div>
+
               <hr>
 
-              <p>Red</p>
-              <input type="range" id="redSlider" min="-10" max="10" step="0.1" value="1">
+              <div id="calibration">
+                <h4>HSL</h4>
+                <h5 id="calibTitle">Hue</h5>
+                <div>
+                  <div id="editCont">
+                    <p id="redHVal">Red</p>
+                    <input type="range" id="redHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="redHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="orangeHVal">Orange</p>
+                    <input type="range" id="orangeHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="orangeHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="yellowHVal">Yellow</p>
+                    <input type="range" id="yellowHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="yellowHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="greenHVal">Green</p>
+                    <input type="range" id="greenHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="greenHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="aquaHVal">Aqua</p>
+                    <input type="range" id="aquaHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="aquaHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="blueHVal">Blue</p>
+                    <input type="range" id="blueHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="blueHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="purpleHVal">Purple</p>
+                    <input type="range" id="purpleHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="purpleHValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="magentaHVal">Magenta</p>
+                    <input type="range" id="magentaHSlider" class="sliders" min="-60" max="60" value="0">
+                    <p id="magentaHValue">0.0</p>
+                  </div>
+                </div>
+              </div>
 
-              <p>Green</p>
-              <input type="range" id="greenSlider" min="-10" max="10" step="0.1" value="1">
+              <hr>
 
-              <p>Blue</p>
-              <input type="range" id="blueSlider" min="-10" max="10" step="0.1" value="1">
+              <div id="chanels">
+                <h4>Chanels</h4>
+                <div id="editCont">
+                  <p id="redVal">Red</p>
+                  <input type="range" id="redSlider" min="-10" max="10" step="0.01" value="0">
+                  <p id="redValue">0.0</p>
+                </div>
 
-              <p>Shadows Tint (Green ↔ Magenta)</p>
-              <input type="range" id="shadowsTint" min="-10" max="10" step="1" value="0"><br>
+                <div id="editCont">
+                  <p id="greenVal">Green</p>
+                  <input type="range" id="greenSlider" min="-10" max="10" step="0.01" value="0">
+                  <p id="greenValue">0.0</p>
+                </div>
 
-              <p>Red Primary Hue</p>
-              <input type="range" id="redHue" min="-1" max="1" step="0.01" value="0"><br>
-              <p>Red Primary Saturation</p>
-              <input type="range" id="redSat" min="0" max="2" step="0.01" value="1"><br>
+                <div id="editCont">
+                  <p id="blueVal">Blue</p>
+                  <input type="range" id="blueSlider" min="-10" max="10" step="0.01" value="0">
+                  <p id="blueValue">0.0</p>
+                </div>
+              </div>
 
-              <p>Green Primary Hue</p>
-              <input type="range" id="greenHue" min="-1" max="1" step="0.01" value="0"><br>
-              <p>Green Primary Saturation</p>
-              <input type="range" id="greenSat" min="0" max="2" step="0.01" value="1"><br>
+              <hr>
 
-              <p>Blue Primary Hue</p>
-              <input type="range" id="blueHue" min="-1" max="1" step="0.01" value="0"><br>
-              <p>Blue Primary Saturation</p>
-              <input type="range" id="blueSat" min="0" max="2" step="0.01" value="1"><br>
+              <div id="calibration">
+                <h4>Calibration</h4>
+                <h5 id="calibTitle">Shadows</h5>
+                <div id="editCont">
+                  <p id="tintVal">Tint</p>
+                  <input type="range" id="shadowsTint" class="sliders" min="-10" max="10" step="1" value="0">
+                  <p id="tintValue">0.0</p>
+                </div>
+
+                <h5 id="calibTitle">Red Primary</h5>
+                <div>
+                  <div id="editCont">
+                    <p id="redHueVal">Hue</p>
+                    <input type="range" id="redHue" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="redHueValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="redSatVal">Saturation</p>
+                    <input type="range" id="redSat" class="sliders" min="0" max="2" step="0.01" value="1">
+                    <p id="redSatValue">0.0</p>
+                  </div>
+                </div>
+
+                <h5 id="calibTitle">Green Primary</h5>
+                <div>
+                  <div id="editCont">
+                    <p id="greenHueVal">Hue</p>
+                    <input type="range" id="greenHue" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="greenHueValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="greenSatVal">Saturation</p>
+                    <input type="range" id="greenSat" class="sliders" min="0" max="2" step="0.01" value="1">
+                    <p id="greenSatValue">0.0</p>
+                  </div>
+                </div>
+
+                <h5 id="calibTitle">Blue Primary </h5>
+                <div>
+                  <div id="editCont">
+                    <p id="blueHueVal">Hue</p>
+                    <input type="range" id="blueHue" class="sliders" min="-1" max="1" step="0.01" value="0">
+                    <p id="blueHueValue">0.0</p>
+                  </div>
+                  <div id="editCont">
+                    <p id="blueSatVal">Saturation</p>
+                    <input type="range" id="blueSat" class="sliders" min="0" max="2" step="0.01" value="1">
+                    <p id="blueSatValue">0.0</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <hr>
 
           </div>
 
@@ -227,6 +327,14 @@
 
 
     const exposureSlider = document.getElementById("exposureSlider");
+    const redHSlider = document.getElementById("redHSlider");
+    const orangeHSlider = document.getElementById("orangeHSlider");
+    const yellowHSlider = document.getElementById("yellowHSlider");
+    const greenHSlider = document.getElementById("greenHSlider");
+    const aquaHSlider = document.getElementById("aquaHSlider");
+    const blueHSlider = document.getElementById("blueHSlider");
+    const purpleHSlider = document.getElementById("purpleHSlider");
+    const magentaHSlider = document.getElementById("magentaHSlider");
     const shadowSlider = document.getElementById("shadowSlider");
     const lightSlider  = document.getElementById("lightSlider");
     const redSlider = document.getElementById("redSlider");
@@ -266,7 +374,7 @@
       // bufferInit();
 
       // Draw initial preview
-      applyChanges(0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1);
+      applyChanges(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1);
       // applyChanges(0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1); // Default
     };
 
@@ -288,6 +396,14 @@
     let shadowStrength;
     let lightStrength;
     let exposureStrength;
+    let redHStrength = 0;
+    let orangeHStrength;
+    let yellowHStrength;
+    let greenHStrength;
+    let aquaHStrength;
+    let blueHStrength;
+    let purpleHStrength;
+    let magentaHStrength;
     let r;
     let g;
     let b;
@@ -308,6 +424,14 @@
       redSlider, 
       greenSlider, 
       blueSlider,
+      redHSlider,
+      orangeHSlider,
+      yellowHSlider,
+      greenHSlider,
+      aquaHSlider,
+      blueHSlider,
+      purpleHSlider,
+      magentaHSlider,
       shadowsTint, 
       redHue, 
       redSat,
@@ -323,16 +447,43 @@
         document.getElementById("lightValue").innerText = lightStrength;
         exposureStrength = parseFloat(exposureSlider.value);
         document.getElementById("expoValue").innerText = exposureStrength;
+        redHStrength = parseFloat(redHSlider.value);
+        document.getElementById("redHValue").innerText = redHStrength;
+        orangeHStrength = parseFloat(orangeHSlider.value);
+        document.getElementById("orangeHValue").innerText = orangeHStrength;
+        yellowHStrength = parseFloat(yellowHSlider.value);
+        document.getElementById("yellowHValue").innerText = yellowHStrength;
+        greenHStrength = parseFloat(greenHSlider.value);
+        document.getElementById("greenHValue").innerText = greenHStrength;
+        aquaHStrength = parseFloat(aquaHSlider.value);
+        document.getElementById("aquaHValue").innerText = aquaHStrength;
+        blueHStrength = parseFloat(blueHSlider.value);
+        document.getElementById("blueHValue").innerText = blueHStrength;
+        purpleHStrength = parseFloat(purpleHSlider.value);
+        document.getElementById("purpleHValue").innerText = purpleHStrength;
+        magentaHStrength = parseFloat(magentaHSlider.value);
+        document.getElementById("redHValue").innerText = magentaHStrength;
+        document.getElementById("redValue").innerText = r;
         r = parseFloat(redSlider.value);
+        document.getElementById("redValue").innerText = r;
         g = parseFloat(greenSlider.value);
+        document.getElementById("greenValue").innerText = g;
         b = parseFloat(blueSlider.value);
+        document.getElementById("blueValue").innerText = b;
         shadowsTintStrenth = parseFloat(shadowsTint.value);
+        document.getElementById("tintValue").innerText = shadowsTintStrenth;
         redHueStrenth = parseFloat(redHue.value);
+        document.getElementById("redHueValue").innerText = redHueStrenth;
         redSatStrength = parseFloat(redSat.value);
+        document.getElementById("redSatValue").innerText = redSatStrength;
         greenHueStrenth = parseFloat(greenHue.value);
+        document.getElementById("greenHueValue").innerText = greenHueStrenth;
         greenSatStrength = parseFloat(greenSat.value);
+        document.getElementById("greenSatValue").innerText = greenSatStrength;
         blueHueStrenth = parseFloat(blueHue.value); 
+        document.getElementById("blueHueValue").innerText = blueHueStrenth;
         blueSatStrength = parseFloat(blueSat.value);
+        document.getElementById("blueSatValue").innerText = blueSatStrength;
         applyChanges(
           exposureStrength, 
           shadowStrength, 
@@ -342,6 +493,13 @@
           b,
           shadowsTintStrenth, 
           redHueStrenth, 
+          orangeHStrength,
+          yellowHStrength,
+          greenHStrength,
+          aquaHStrength,
+          blueHStrength,
+          purpleHStrength,
+          magentaHStrength,
           redSatStrength,
           greenHueStrenth, 
           greenSatStrength, 
@@ -362,6 +520,13 @@
       blueShift,
       shadowsTintStrength, 
       redHueStrength, 
+      orangeHStrength,
+      yellowHStrength,
+      greenHStrength,
+      aquaHStrength,
+      blueHStrength,
+      purpleHStrength,
+      magentaHStrength,
       redSatStrength,
       greenHueStrength, 
       greenSatStrength, 
@@ -386,7 +551,7 @@
       );
 
       const data = imageData.data;
-      bufferImage = imageData;
+      // bufferImage = imageData;
 
       for (let i = 0; i < data.length; i += 4) {
         let r = data[i];
@@ -458,6 +623,66 @@
           b += blueHueStrength * (r - g);
           b *= blueSatStrength;
         // }
+
+
+        // === COLOR CORECTION == //
+
+        const hslColorBands = {
+          red:     { min: 345, max: 15 },
+          orange:  { min: 15,  max: 45 },
+          yellow:  { min: 45,  max: 70 },
+          green:   { min: 70,  max: 170 },
+          aqua:    { min: 170, max: 200 },
+          blue:    { min: 200, max: 260 },
+          purple:  { min: 260, max: 290 },
+          magenta: { min: 290, max: 345 },
+        };
+
+        // const adjustments = {
+        //   red:     { hue: redHStrength, sat: 1, lum: 0 },
+        //   orange:  { hue: orangeHStrength,  sat: 1, lum: 0 },
+        //   yellow:  { hue: yellowHStrength, sat: 1, lum: 0 },
+        //   green:   { hue: greenHStrength, sat: 1, lum: 0 },
+        //   aqua:    { hue: aquaHStrength, sat: 1, lum: 0 },
+        //   blue:    { hue: blueHStrength, sat: 1, lum: 0 },
+        //   purple:  { hue: purpleHStrength, sat: 1, lum: 0 },
+        //   magenta: { hue: magentaHStrength, sat: 1, lum: 0 },
+        // };
+
+        const adjustments = {
+          red:     { hue: redHStrength, sat: 0, lum: 0 },
+          orange:  { hue: orangeHStrength, sat: 0, lum: 0 },
+          yellow:  { hue: yellowHStrength, sat: 0, lum: 0 },
+          green:   { hue: greenHStrength, sat: 0, lum: 0 },
+          aqua:    { hue: aquaHStrength, sat: 0, lum: 0 },
+          blue:    { hue: blueHStrength, sat: 0, lum: 0 },
+          purple:  { hue: purpleHStrength, sat: 0, lum: 0 },
+          magenta: { hue: magentaHStrength, sat: 0, lum: 0 },
+        };
+
+
+
+        let [h, s, l] = rgbToHsl(r, g, b);
+
+        for (const [band, {min, max}] of Object.entries(hslColorBands)) {
+          const adj = adjustments[band];
+          if (adj) {
+            const inRange = (min < max)
+              ? h >= min && h < max
+              : h >= min || h < max;
+
+            if (inRange) {
+              h = (h + adj.hue) % 360;
+              s = Math.min(1, Math.max(0, s + adj.sat));
+              l = Math.min(1, Math.max(0, l + adj.lum));
+            }
+          }
+        }
+
+        const [newR, newG, newB] = hslToRgb(h, s, l);
+        r = newR;
+        g = newG;
+        b = newB;
 
         data[i] = Math.min(255, Math.max(0, r));
         data[i + 1] = Math.min(255, Math.max(0, g));
@@ -667,6 +892,54 @@
 
   }
 
+
+  // ============ COLOR CORRECTION ============ //
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0; // achromatic
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch(max){
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+        case g: h = ((b - r) / d + 2); break;
+        case b: h = ((r - g) / d + 4); break;
+      }
+      h *= 60;
+    }
+
+    return [h, s, l];
+  }
+
+function hslToRgb(h, s, l) {
+  let r, g, b;
+  h = h % 360;
+  if (s === 0) {
+    r = g = b = l; // achromatic
+  } else {
+    const hue2rgb = (p, q, t) => {
+      t = (t < 0) ? t + 1 : (t > 1) ? t - 1 : t;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    h /= 360;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+
+  return [r * 255, g * 255, b * 255];
+}
 
 
 
