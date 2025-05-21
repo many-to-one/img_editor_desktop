@@ -44,20 +44,33 @@
               </div>
               <hr>
 
-              <div id="tone">
-                <h4>Tone</h4>
+              <div id="WB">
+                <h4>WB</h4>
 
                 <div id="editCont">
-                  <p>Temperature</p>
-                  <input type="range" id="temperatureSlider" min="2000" max="10000" value="6500" step="100">
+                  <p>Temp</p>
+                  <input type="range" id="temperatureSlider" class="sliders" min="2000" max="10000" value="6500" step="100">
                   <p id="temperatureValue">6500</p>
                 </div>
 
                 <div id="editCont">
                   <p>Tint</p>
-                  <input type="range" id="tintSlider" min="-150" max="150" value="0">
+                  <input type="range" id="tintSlider" class="sliders" min="-150" max="150" value="0">
                   <p id="tintBalanceValue">0</p>
                 </div>
+
+                <div id="editCont">
+                  <p>Dehaze</p>
+                  <input type="range" id="dehazeSlider" min="-100" max="100" value="0">
+                  <p id="dehazeValue">0</p>
+                </div>
+
+              </div>
+
+              <hr>
+
+              <div id="tone">
+                <h4>Tone</h4>
 
                 <div id="editCont">
                   <p id="brightnessVal">Brightness</p>
@@ -437,6 +450,7 @@
 
     const temperatureSlider = document.getElementById("temperatureSlider");
     const tintSlider = document.getElementById("tintSlider");
+    const dehazeSlider = document.getElementById("dehazeSlider")
 
     const exposureSlider = document.getElementById("exposureSlider");
     const saturationSlider = document.getElementById("saturationSlider");
@@ -505,7 +519,7 @@
       previewImage = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
 
       // === Draw initial preview
-      applyChanges(6500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1);
+      applyChanges(6500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1);
     };
 
 
@@ -524,6 +538,7 @@
 
     let temperatureStrength;
     let tintStrength;
+    let dehazeStrength;
 
     let brightnessStrength;
     let shadowStrength;
@@ -574,6 +589,8 @@
     [
       temperatureSlider,
       tintSlider,
+      dehazeSlider,
+      //
       exposureSlider, 
       shadowSlider, 
       lightSlider,  
@@ -623,6 +640,9 @@
         document.getElementById("temperatureValue").innerText = temperatureStrength;
         tintStrength = parseFloat(tintSlider.value);
         document.getElementById("tintBalanceValue").innerText = tintStrength;
+        dehazeStrength = parseFloat(dehazeSlider.value);
+        document.getElementById("dehazeValue").innerText = dehazeStrength;
+
         exposureStrength = parseFloat(exposureSlider.value);
         document.getElementById("expoValue").innerText = exposureStrength;
         shadowStrength = parseFloat(shadowSlider.value);
@@ -707,6 +727,8 @@
         applyChanges(
           temperatureStrength,
           tintStrength,
+          dehazeStrength,
+          //
           exposureStrength, 
           shadowStrength, 
           lightStrength, 
@@ -758,6 +780,8 @@
     function applyChanges(
       temperatureStrength,
       tintStrength,
+      dehazeStrength,
+      //
       exposureStrength, 
       shadowStrength, 
       lightStrength, 
@@ -889,19 +913,18 @@
           b *= blueSatStrength;
         // }
 
+        // === DEHAZE === //
+        const amount = dehazeStrength / 100.0;
+        const blurred = gaussianBlur(imageData, 3); // simple box/gaussian blur
+        const blurData = blurred.data;
+        for (let j = 0; j < 3; j++) { // R, G, B
+          const original = data[i + j];
+          const blur = blurData[i + j];
+          const enhanced = original + (original - blur) * amount;
+          data[i + j] = Math.max(0, Math.min(255, enhanced));
+        }
+
         // === WHITE BALLANCE === //
-        // const tempFactor = temperatureStrength / 100;
-        // const tintFactor = tintStrength / 100;
-
-        // // Apply temperature: affects blue/yellow (R/B)
-        // r *= 1 + tempFactor;
-        // b *= 1 - tempFactor;
-
-        // // Apply tint: affects green/magenta (G/R+B)
-        // g *= 1 + tintFactor;
-        // r *= 1 - tintFactor * 0.5;
-        // b *= 1 - tintFactor * 0.5;
-
         const [targetR, targetG, targetB] = kelvinToRGB(temperatureStrength);
 
         // Normalize to multipliers
@@ -1010,6 +1033,38 @@
     }
 
 
+    function gaussianBlur(imageData, radius = 1) {
+      // very basic box blur for speed (not perfect)
+      const width = imageData.width;
+      const height = imageData.height;
+      const src = imageData.data;
+      const output = new Uint8ClampedArray(src.length);
+      const tmp = new Uint8ClampedArray(src.length);
+
+      const getPixel = (x, y, c) => {
+        x = Math.max(0, Math.min(width - 1, x));
+        y = Math.max(0, Math.min(height - 1, y));
+        return src[(y * width + x) * 4 + c];
+      };
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          for (let c = 0; c < 3; c++) {
+            let total = 0, count = 0;
+            for (let dx = -radius; dx <= radius; dx++) {
+              for (let dy = -radius; dy <= radius; dy++) {
+                total += getPixel(x + dx, y + dy, c);
+                count++;
+              }
+            }
+            tmp[(y * width + x) * 4 + c] = total / count;
+          }
+          tmp[(y * width + x) * 4 + 3] = src[(y * width + x) * 4 + 3]; // alpha
+        }
+      }
+
+      return new ImageData(tmp, width, height);
+    }
 
 
 
