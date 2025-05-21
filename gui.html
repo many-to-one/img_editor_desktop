@@ -46,9 +46,22 @@
 
               <div id="tone">
                 <h4>Tone</h4>
+
                 <div id="editCont">
-                  <p id="gammaVal">Brightness</p>
-                  <input type="range" id="gammaSlider" class="sliders" min="0" max="300" step="10" value="100">
+                  <p>Temperature</p>
+                  <input type="range" id="temperatureSlider" min="2000" max="10000" value="6500" step="100">
+                  <p id="temperatureValue">6500</p>
+                </div>
+
+                <div id="editCont">
+                  <p>Tint</p>
+                  <input type="range" id="tintSlider" min="-150" max="150" value="0">
+                  <p id="tintBalanceValue">0</p>
+                </div>
+
+                <div id="editCont">
+                  <p id="brightnessVal">Brightness</p>
+                  <input type="range" id="brightnessSlider" class="sliders" min="0" max="300" step="10" value="100">
                   <p id="brightnessValue">0.0</p>
                 </div>
 
@@ -69,6 +82,13 @@
                   <input type="range" id="lightSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
                   <p id="lightValue">0.0</p>
                 </div>
+
+                <div id="editCont">
+                  <p id="saturationVal">Saturation</p>
+                  <input type="range" id="saturationSlider" class="sliders" min="-1" max="1" step="0.01" value="0">
+                  <p id="saturationValue">0.0</p>
+                </div>
+
 
               </div>
 
@@ -403,10 +423,10 @@
       }
     }
 
-    const gammaSlider = document.getElementById("gammaSlider");
+    const brightnessSlider = document.getElementById("brightnessSlider");
 
-    gammaSlider.addEventListener("input", () => {
-      applyGammaCorrection(parseFloat(gammaSlider.value));
+    brightnessSlider.addEventListener("input", () => {
+      applyGammaCorrection(parseFloat(brightnessSlider.value));
     });
 
     function applyGammaCorrection(gamma) {
@@ -415,8 +435,11 @@
       document.getElementById("brightnessValue").innerText = gamma;
     }
 
+    const temperatureSlider = document.getElementById("temperatureSlider");
+    const tintSlider = document.getElementById("tintSlider");
 
     const exposureSlider = document.getElementById("exposureSlider");
+    const saturationSlider = document.getElementById("saturationSlider");
 
     const redHSlider = document.getElementById("redHSlider");
     const orangeHSlider = document.getElementById("orangeHSlider");
@@ -481,11 +504,8 @@
       previewCtx.drawImage(image, 0, 0, previewCanvas.width, previewCanvas.height);
       previewImage = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
 
-      // bufferInit();
-
-      // Draw initial preview
-      applyChanges(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1);
-      // applyChanges(0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1); // Default
+      // === Draw initial preview
+      applyChanges(6500, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1);
     };
 
 
@@ -502,12 +522,16 @@
         1.055 * Math.pow(c, 1 / 2.4) - 0.055;
     }
 
+    let temperatureStrength;
+    let tintStrength;
 
+    let brightnessStrength;
     let shadowStrength;
     let lightStrength;
     let exposureStrength;
+    let saturationStrength;
 
-    let redHStrength = 0;
+    let redHStrength;
     let orangeHStrength;
     let yellowHStrength;
     let greenHStrength;
@@ -516,7 +540,7 @@
     let purpleHStrength;
     let magentaHStrength;
 
-    let redSStrength = 0;
+    let redSStrength;
     let orangeSStrength;
     let yellowSStrength;
     let greenSStrength;
@@ -525,7 +549,7 @@
     let purpleSStrength;
     let magentaSStrength;
 
-    let redLStrength = 0;
+    let redLStrength;
     let orangeLStrength;
     let yellowLStrength;
     let greenLStrength;
@@ -534,28 +558,27 @@
     let purpleLStrength;
     let magentaLStrength;
 
-    let r;
+    let r = 1;
     let g;
     let b;
-    let shadowsTintStrenth;
-    let redHueStrenth;
+    let shadowsTintStrength;
+    let redHueStrength;
     let redSatStrength;
-    let greenHueStrenth;
+    let greenHueStrength;
     let greenSatStrength;
-    let blueHueStrenth;
+    let blueHueStrength;
     let blueSatStrength;
     let lut;
 
 
     [
+      temperatureSlider,
+      tintSlider,
       exposureSlider, 
       shadowSlider, 
-      lightSlider, 
-
-      redSlider, 
-      greenSlider, 
-      blueSlider,
-
+      lightSlider,  
+      saturationSlider,   
+      //
       redHSlider,
       orangeHSlider,
       yellowHSlider,
@@ -564,7 +587,7 @@
       blueHSlider,
       purpleHSlider,
       magentaHSlider,
-
+      //
       redSSlider,
       orangeSSlider,
       yellowSSlider,
@@ -573,7 +596,7 @@
       blueSSlider,
       purpleSSlider,
       magentaSSlider,
-
+      //
       redLSlider,
       orangeLSlider,
       yellowLSlider,
@@ -582,7 +605,11 @@
       blueLSlider,
       purpleLSlider,
       magentaLSlider,
-
+      //
+      redSlider, 
+      greenSlider, 
+      blueSlider,
+      //
       shadowsTint, 
       redHue, 
       redSat,
@@ -592,12 +619,18 @@
       blueSat
     ].forEach(slider => {
       slider.addEventListener("input", () => {
+        temperatureStrength = parseFloat(temperatureSlider.value);
+        document.getElementById("temperatureValue").innerText = temperatureStrength;
+        tintStrength = parseFloat(tintSlider.value);
+        document.getElementById("tintBalanceValue").innerText = tintStrength;
+        exposureStrength = parseFloat(exposureSlider.value);
+        document.getElementById("expoValue").innerText = exposureStrength;
         shadowStrength = parseFloat(shadowSlider.value);
         document.getElementById("shadowValue").innerText = shadowStrength;
         lightStrength = parseFloat(lightSlider.value);
         document.getElementById("lightValue").innerText = lightStrength;
-        exposureStrength = parseFloat(exposureSlider.value);
-        document.getElementById("expoValue").innerText = exposureStrength;
+        saturationStrength = parseFloat(saturationSlider.value);
+        document.getElementById("saturationValue").innerText = saturationStrength.toFixed(2);
 
         redHStrength = parseFloat(redHSlider.value);
         document.getElementById("redHValue").innerText = redHStrength;
@@ -615,7 +648,6 @@
         document.getElementById("purpleHValue").innerText = purpleHStrength;
         magentaHStrength = parseFloat(magentaHSlider.value);
         document.getElementById("magentaHValue").innerText = magentaHStrength;
-        document.getElementById("magentaValue").innerText = r;
 
         redSStrength = parseFloat(redSSlider.value);
         document.getElementById("redSValue").innerText = redSStrength;
@@ -658,30 +690,29 @@
         b = parseFloat(blueSlider.value);
         document.getElementById("blueValue").innerText = b;
 
-        shadowsTintStrenth = parseFloat(shadowsTint.value);
-        document.getElementById("tintValue").innerText = shadowsTintStrenth;
-        redHueStrenth = parseFloat(redHue.value);
-        document.getElementById("redHueValue").innerText = redHueStrenth;
+        shadowsTintStrength = parseFloat(shadowsTint.value);
+        document.getElementById("tintValue").innerText = shadowsTintStrength;
+        redHueStrength = parseFloat(redHue.value);
+        document.getElementById("redHueValue").innerText = redHueStrength;
         redSatStrength = parseFloat(redSat.value);
         document.getElementById("redSatValue").innerText = redSatStrength;
-        greenHueStrenth = parseFloat(greenHue.value);
-        document.getElementById("greenHueValue").innerText = greenHueStrenth;
+        greenHueStrength = parseFloat(greenHue.value);
+        document.getElementById("greenHueValue").innerText = greenHueStrength;
         greenSatStrength = parseFloat(greenSat.value);
         document.getElementById("greenSatValue").innerText = greenSatStrength;
-        blueHueStrenth = parseFloat(blueHue.value); 
-        document.getElementById("blueHueValue").innerText = blueHueStrenth;
+        blueHueStrength = parseFloat(blueHue.value); 
+        document.getElementById("blueHueValue").innerText = blueHueStrength;
         blueSatStrength = parseFloat(blueSat.value);
         document.getElementById("blueSatValue").innerText = blueSatStrength;
         applyChanges(
+          temperatureStrength,
+          tintStrength,
           exposureStrength, 
           shadowStrength, 
           lightStrength, 
-
-          r,
-          g,
-          b,
-
-          redHStrenth, 
+          saturationStrength,
+          //
+          redHStrength, 
           orangeHStrength,
           yellowHStrength,
           greenHStrength,
@@ -689,8 +720,8 @@
           blueHStrength,
           purpleHStrength,
           magentaHStrength,
-
-          redSStrenth, 
+          //
+          redSStrength, 
           orangeSStrength,
           yellowSStrength,
           greenSStrength,
@@ -698,8 +729,8 @@
           blueSStrength,
           purpleSStrength,
           magentaSStrength,
-
-          redLStrenth, 
+          //
+          redLStrength, 
           orangeLStrength,
           yellowLStrength,
           greenLStrength,
@@ -707,29 +738,31 @@
           blueLStrength,
           purpleLStrength,
           magentaLStrength,
-
-          shadowsTintStrenth,
-
+          //
+          r,
+          g,
+          b,
+          //
+          shadowsTintStrength,
+          redHueStrength,
           redSatStrength,
-          greenHueStrenth, 
+          greenHueStrength, 
           greenSatStrength, 
-          blueHueStrenth, 
+          blueHueStrength, 
           blueSatStrength,
-          // lut,
         )
       });
     });
 
 
     function applyChanges(
+      temperatureStrength,
+      tintStrength,
       exposureStrength, 
       shadowStrength, 
       lightStrength, 
-
-      redShift,
-      greenShift,
-      blueShift,
-
+      saturationStrength,
+      //
       redHStrength, 
       orangeHStrength,
       yellowHStrength,
@@ -738,7 +771,7 @@
       blueHStrength,
       purpleHStrength,
       magentaHStrength,
-
+      //
       redSStrength, 
       orangeSStrength,
       yellowSStrength,
@@ -747,7 +780,7 @@
       blueSStrength,
       purpleSStrength,
       magentaSStrength,
-
+      //
       redLStrength, 
       orangeLStrength,
       yellowLStrength,
@@ -756,23 +789,24 @@
       blueLStrength,
       purpleLStrength,
       magentaLStrength,
-
+      //
+      redShift,
+      greenShift,
+      blueShift,
+      //
       shadowsTintStrength, 
+      redHueStrength,
       redSatStrength,
       greenHueStrength, 
       greenSatStrength, 
       blueHueStrength, 
       blueSatStrength,
-      // lut,
     ) {
       if (!previewImage) return;
 
-      console.log('lut--------------', lut)
-      console.log('redHueStrength--------------', redHueStrength)
-
       if (!lut) {
         lut = Array.from({ length: 256 }, (_, i) => i);  // ✅ use identity LUT if missing
-        console.log('!lut--------------', lut)
+        // console.log('!lut--------------', lut)
       }
 
       const imageData = new ImageData(
@@ -855,8 +889,38 @@
           b *= blueSatStrength;
         // }
 
+        // === WHITE BALLANCE === //
+        // const tempFactor = temperatureStrength / 100;
+        // const tintFactor = tintStrength / 100;
 
-        // === COLOR CORECTION == //
+        // // Apply temperature: affects blue/yellow (R/B)
+        // r *= 1 + tempFactor;
+        // b *= 1 - tempFactor;
+
+        // // Apply tint: affects green/magenta (G/R+B)
+        // g *= 1 + tintFactor;
+        // r *= 1 - tintFactor * 0.5;
+        // b *= 1 - tintFactor * 0.5;
+
+        const [targetR, targetG, targetB] = kelvinToRGB(temperatureStrength);
+
+        // Normalize to multipliers
+        const rMult = targetR / 255;
+        const gMult = targetG / 255;
+        const bMult = targetB / 255;
+
+        // Apply temperature
+        r *= rMult;
+        g *= gMult;
+        b *= bMult;
+
+        // Apply tint (green-magenta)
+        g *= 1 + tintStrength / 150;
+        r *= 1 - tintStrength / 300;
+        b *= 1 - tintStrength / 300;
+
+
+        // === HSL COLOR CORECTION == //
 
         const hslColorBands = {
           red:     { min: 345, max: 15 },
@@ -869,31 +933,24 @@
           magenta: { min: 290, max: 345 },
         };
 
-        // const adjustments = {
-        //   red:     { hue: redHStrength, sat: 1, lum: 0 },
-        //   orange:  { hue: orangeHStrength,  sat: 1, lum: 0 },
-        //   yellow:  { hue: yellowHStrength, sat: 1, lum: 0 },
-        //   green:   { hue: greenHStrength, sat: 1, lum: 0 },
-        //   aqua:    { hue: aquaHStrength, sat: 1, lum: 0 },
-        //   blue:    { hue: blueHStrength, sat: 1, lum: 0 },
-        //   purple:  { hue: purpleHStrength, sat: 1, lum: 0 },
-        //   magenta: { hue: magentaHStrength, sat: 1, lum: 0 },
-        // };
 
         const adjustments = {
-          red:     { hue: redHStrength, sat: 0, lum: 0 },
-          orange:  { hue: orangeHStrength, sat: 0, lum: 0 },
-          yellow:  { hue: yellowHStrength, sat: 0, lum: 0 },
-          green:   { hue: greenHStrength, sat: 0, lum: 0 },
-          aqua:    { hue: aquaHStrength, sat: 0, lum: 0 },
-          blue:    { hue: blueHStrength, sat: 0, lum: 0 },
-          purple:  { hue: purpleHStrength, sat: 0, lum: 0 },
-          magenta: { hue: magentaHStrength, sat: 0, lum: 0 },
+         red:     { hue: redHStrength, sat: redSStrength, lum: redLStrength },
+         orange:  { hue: orangeHStrength, sat: orangeSStrength, lum: orangeLStrength },
+         yellow:  { hue: yellowHStrength, sat: yellowSStrength, lum: yellowLStrength },
+         green:   { hue: greenHStrength, sat: greenSStrength, lum: greenLStrength },
+         aqua:    { hue: aquaHStrength, sat: aquaSStrength, lum: aquaLStrength },
+         blue:    { hue: blueHStrength, sat: blueSStrength, lum: blueLStrength },
+         purple:  { hue: purpleHStrength, sat: purpleSStrength, lum: purpleLStrength },
+         magenta: { hue: magentaHStrength, sat: magentaSStrength, lum: magentaLStrength },
         };
 
 
-
         let [h, s, l] = rgbToHsl(r, g, b);
+
+        // === Adjust SATURATION === //
+        s += saturationStrength;
+        s = Math.max(0, Math.min(1, s)); // clamp between 0 and 1
 
         for (const [band, {min, max}] of Object.entries(hslColorBands)) {
           const adj = adjustments[band];
@@ -931,6 +988,31 @@
 
 
 
+    function kelvinToRGB(temperatureStrength) {
+      const temp = temperatureStrength / 100;
+      let r, g, b;
+
+      if (temp <= 66) {
+        r = 255;
+        g = temp <= 19 ? 0 : 99.47 * Math.log(temp) - 161.12;
+        b = temp <= 19 ? 0 : 138.52 * Math.log(temp - 10) - 305.04;
+      } else {
+        r = 329.7 * Math.pow(temp - 60, -0.1332);
+        g = 288.1 * Math.pow(temp - 60, -0.0755);
+        b = 255;
+      }
+
+      return [
+        Math.max(0, Math.min(255, r)),
+        Math.max(0, Math.min(255, g)),
+        Math.max(0, Math.min(255, b))
+      ];
+    }
+
+
+
+
+
     let isDragging = false;
     let offsetX, offsetY;
 
@@ -956,7 +1038,7 @@
     });
 
 
-    // CURVE LOGIC
+    // ====================== CURVE LOGIC ====================== //
     let curvePoints = [
     { x: 0, y: 0 },
     { x: 64, y: 64 },
@@ -1007,11 +1089,6 @@
   canvas.addEventListener("mouseleave", () => dragging = null);
 
   let dragging = null;
-
-  // function openCurve() {
-  //   canvas.style.display = canvas.style.display === "block" ? "none" : "block";
-  //   drawCurve();
-  // }
 
   function drawCurve() {
     canvas.style.cursor = "crosshair";
@@ -1064,6 +1141,7 @@
     }
   }
 
+  
   function onMouseMove(e) {
     if (dragging === null) return;
     const pos = getMousePos(e);
@@ -1076,14 +1154,47 @@
     curvePoints.sort((a, b) => a.x - b.x); // Maintain order
     drawCurve();
     lut = getCurveLUT(curvePoints);
-    // console.log('onMouseMove----------', lut)
+
       applyChanges(
+        // === Tone === //
+        parseFloat(temperatureSlider.value),
+        parseFloat(tintSlider.value),
+        parseFloat(exposureSlider.value),
         parseFloat(shadowSlider.value),
         parseFloat(lightSlider.value),
-        parseFloat(exposureSlider.value),
+        parseFloat(saturationSlider.value),
+        // === RGB Chanels === //
         parseFloat(redSlider.value),
         parseFloat(greenSlider.value),
         parseFloat(blueSlider.value),
+        // === HSL Hue === //
+        parseFloat(redHSlider.value),
+        parseFloat(orangeHSlider.value),
+        parseFloat(yellowHSlider.value),
+        parseFloat(greenHSlider.value),
+        parseFloat(aquaHSlider.value),
+        parseFloat(blueHSlider.value),
+        parseFloat(purpleHSlider.value),
+        parseFloat(magentaHSlider.value),
+        // === HSL Saturation === //
+        parseFloat(redSSlider.value),
+        parseFloat(orangeSSlider.value),
+        parseFloat(yellowSSlider.value),
+        parseFloat(greenSSlider.value),
+        parseFloat(aquaSSlider.value),
+        parseFloat(blueSSlider.value),
+        parseFloat(purpleSSlider.value),
+        parseFloat(magentaSSlider.value),
+        // === HSL Luminance === //
+        parseFloat(redLSlider.value),
+        parseFloat(orangeLSlider.value),
+        parseFloat(yellowLSlider.value),
+        parseFloat(greenLSlider.value),
+        parseFloat(aquaLSlider.value),
+        parseFloat(blueLSlider.value),
+        parseFloat(purpleLSlider.value),
+        parseFloat(magentaLSlider.value),
+        // === Calibration === //
         parseFloat(shadowsTint.value),
         parseFloat(redHue.value),
         parseFloat(redSat.value),
@@ -1091,37 +1202,9 @@
         parseFloat(greenSat.value),
         parseFloat(blueHue.value),
         parseFloat(blueSat.value),
-      // lut,
     ) 
-    // applyToneCurveToImage();
-    
+
   };
-
-
-  function applyToneCurveToImage() {
-    if (!previewImage) return;
-
-    console.log('applyToneCurveToImage------------', lut)
-
-    const imageData = new ImageData(
-      new Uint8ClampedArray(previewImage.data),
-      previewImage.width,
-      previewImage.height
-    );
-
-    const data =  imageData.data;
-
-    for (let i = 0; i < data.length; i += 4) {
-      data[i]     = lut[data[i]];     // R
-      data[i + 1] = lut[data[i + 1]]; // G
-      data[i + 2] = lut[data[i + 2]]; // B
-    }
-
-    bufferImage.data = data
-    previewCtx.putImageData(imageData, 0, 0);
-    res.src = previewCanvas.toDataURL();
-
-  }
 
 
   // ============ COLOR CORRECTION ============ //
@@ -1147,30 +1230,30 @@
     return [h, s, l];
   }
 
-function hslToRgb(h, s, l) {
-  let r, g, b;
-  h = h % 360;
-  if (s === 0) {
-    r = g = b = l; // achromatic
-  } else {
-    const hue2rgb = (p, q, t) => {
-      t = (t < 0) ? t + 1 : (t > 1) ? t - 1 : t;
-      if (t < 1/6) return p + (q - p) * 6 * t;
-      if (t < 1/2) return q;
-      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-      return p;
-    };
+  function hslToRgb(h, s, l) {
+    let r, g, b;
+    h = h % 360;
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
+      const hue2rgb = (p, q, t) => {
+        t = (t < 0) ? t + 1 : (t > 1) ? t - 1 : t;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
 
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    const p = 2 * l - q;
-    h /= 360;
-    r = hue2rgb(p, q, h + 1/3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1/3);
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      h /= 360;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return [r * 255, g * 255, b * 255];
   }
-
-  return [r * 255, g * 255, b * 255];
-}
 
 
 
