@@ -14,6 +14,7 @@
         <button onclick="BW()">BW</button>
         <button onclick="removeBG()">Remove BG</button>
         <button onclick="gammaF()">Gamma</button>
+        <button onclick="dehaze()">Dehaze</button>
         
     </div>
 
@@ -61,7 +62,7 @@
 
                 <div id="editCont">
                   <p>Dehaze</p>
-                  <input type="range" id="dehazeSlider" min="-100" max="100" value="0">
+                  <input type="range" id="dehazeSlider" class="sliders" min="-100" max="100" value="0">
                   <p id="dehazeValue">0</p>
                 </div>
 
@@ -411,6 +412,22 @@
       if (!base64Image) return alert("Please select an image first.");
 
       const result = await window.pywebview.api.process_image(base64Image);
+      load.style.display = 'block';
+      if (result.status === "success") {
+        image.src = result.output_path + '?' + new Date().getTime(); // cache busting
+        imgElem.src = result.output_path + '?' + new Date().getTime(); // cache copy busting
+        load.style.display = 'none';
+      } else {
+        alert("Error: " + result.message);
+        load.style.display = 'none';
+      }
+    }
+
+    // Black and white
+    async function dehaze() {
+      if (!base64Image) return alert("Please select an image first.");
+
+      const result = await window.pywebview.api.remove_haze(base64Image);
       load.style.display = 'block';
       if (result.status === "success") {
         image.src = result.output_path + '?' + new Date().getTime(); // cache busting
@@ -833,7 +850,7 @@
         // console.log('!lut--------------', lut)
       }
 
-      const imageData = new ImageData(
+      var imageData = new ImageData(
         new Uint8ClampedArray(previewImage.data),
         previewImage.width,
         previewImage.height
@@ -914,15 +931,7 @@
         // }
 
         // === DEHAZE === //
-        const amount = dehazeStrength / 100.0;
-        const blurred = gaussianBlur(imageData, 3); // simple box/gaussian blur
-        const blurData = blurred.data;
-        for (let j = 0; j < 3; j++) { // R, G, B
-          const original = data[i + j];
-          const blur = blurData[i + j];
-          const enhanced = original + (original - blur) * amount;
-          data[i + j] = Math.max(0, Math.min(255, enhanced));
-        }
+        imageData = applyDehaze(imageData, dehazeStrength);
 
         // === WHITE BALLANCE === //
         const [targetR, targetG, targetB] = kelvinToRGB(temperatureStrength);
@@ -1065,6 +1074,29 @@
 
       return new ImageData(tmp, width, height);
     }
+
+    function applyDehaze(imageData, strength) {
+      if (strength === 0) return imageData;
+
+      const blurred = gaussianBlur(imageData, 3); // simple box/gaussian blur
+
+      const amount = strength / 100.0;
+
+      const data = imageData.data;
+      const blurData = blurred.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        for (let j = 0; j < 3; j++) { // R, G, B
+          const original = data[i + j];
+          const blur = blurData[i + j];
+          const enhanced = original + (original - blur) * amount;
+          data[i + j] = Math.max(0, Math.min(255, enhanced));
+        }
+      }
+
+      return imageData;
+    }
+
 
 
 
