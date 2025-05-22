@@ -181,6 +181,6 @@ class Api:
 
 if __name__ == '__main__':
     api = Api()
-    window = webview.create_window('Image Processor', 'gui.html', js_api=api, width=800, height=600)
+    window = webview.create_window('Image Processor', 'test.html', js_api=api, width=800, height=600)
     # webview.windows[0].load_url("gui.html")
     webview.start(debug=True,)
