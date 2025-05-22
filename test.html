@@ -12,57 +12,62 @@
     
     <div class="main-container">
 
-        <div class="h-nav">
-            <input type="file" id="fileInput" accept=".jpg, .JPG, .jpeg, .png, .cr2, .nef, .arw, .dng, .rw2">
-            <button onclick="location.reload()">Reload App</button>
+        <div class="window-cont">
+
+            <div class="h-nav">
+                <input type="file" id="fileInput" accept=".jpg, .JPG, .jpeg, .png, .cr2, .nef, .arw, .dng, .rw2">
+            </div>
+
+            <div class="desctop">
+
+                <p id="load">Processing...</p>
+                <p id="dialogWindow"></p>
+
+                <canvas id="canvas" style="display:block;"></canvas>
+                <button id="zoomIn">+</button>
+                <button id="zoomOut">-</button>
+
+            </div>
+
+            <div id="workspace">
+
+                <div id="gammaCont">
+
+                    <div id="tone">
+                        
+                        <h4>Tone</h4>
+                        <button onclick="location.reload()">Reload App</button>
+
+                        <!-- ----------------------------- BRIGHTNESS ----------------------------- -->
+                        <label for="BrightnessSlider">Brightness (<span id="BrightnessValue">0</span>)</label>
+                        <br>
+                        <input id="BrightnessSlider" type="range" value="0" min="-100" max="100">
+                        <br>
+
+                        <!-- ----------------------------- CONTRAST ----------------------------- -->
+                        <label for="ContrastSlider">Contrast (<span id="ContrastValue">0</span>)</label>
+                        <br>
+                        <input type="range" id="ContrastSlider" value="0" min="-100" max="100">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
         </div>
 
-        <p id="load">Processing...</p>
-        <p id="dialogWindow"></p>
+    </div>
 
-        <canvas id="previewCanvas" style="display:block;"></canvas>
-        <canvas id="fullCanvas" style="display:none;"></canvas>
-
-        <img id="original" style="display: none;">
-        <img id="res">
-
-        <!-- ----------------------------- BRIGHTNESS ----------------------------- -->
-        <label for="BrightnessSlider">Brightness (<span id="BrightnessValue">0</span>)</label>
-        <br>
-        <input id="BrightnessSlider" type="range" value="0" min="-100" max="100">
-        <br>
-
-        <!-- ----------------------------- CONTRAST ----------------------------- -->
-        <label for="ContrastSlider">Contrast (<span id="ContrastValue">0</span>)</label>
-        <br>
-        <input type="range" id="ContrastSlider" value="0" min="-100" max="100">
-
-        </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gpu.js/1.0.2/gpu.min.js"></script>
 
     <script src="./js/variables.js"></script>
     <script src="./js/upload.js"></script>
-    <script src="./js/draw_canvas.js"></script>
+    <script src="./js/manipulations.js"></script>
+    <script src="./js/zoom.js"></script>
     <script src="./js/brightness.js"></script>
     <script src="./js/contrast.js"></script>
-    <script>
-
-        
-
-        // function onPaint(base64Image) {
-        //     painted = true;
-        //     drawImage(base64Image);
-
-        //     var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        //     var brightness = parseInt(brightnessSlider.value, 10);
-        //     var contrast = parseInt(contrastSlider.value, 10);
-
-        //     applyBrightness(imageData.data, brightness);
-        //     applyContrast(imageData.data, contrast);
-        //     context.putImageData(imageData, 0, 0);
-        // }
-
-    </script>
 
 </body>
 </html>
